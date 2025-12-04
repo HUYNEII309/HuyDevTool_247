@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhập Mã Key</title>
+    <link rel="stylesheet" href="style.css"> 
+    <link rel="icon" href="images/apache_orc_logo_icon_167862.png" type="image/x-icon">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <img src="images/apache_orc_logo_icon_167862.png" alt="Logo" class="icon"> 
+            <h1>Nhập Mã Key</h1>
+            <p>Vui lòng nhập mã key để tiếp tục</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="key">Mã Key</label>
+                <input type="text" id="key" name="key" placeholder="Nhập mã key" required>
+            </div>
+            <button type="submit" class="login-btn">Xác Nhận</button>
+        </form>
+
+        <div id="toast" class="toast" aria-live="polite">
+            <div class="toast-inner">
+                <div class="toast-icon" aria-hidden="true"></div>
+                <div class="toast-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" style="display:none; position:fixed; inset:0; z-index:10000; align-items:center; justify-content:center; background:rgba(0,0,0,0.6);">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+            <div class="spinner" style="width:60px; height:60px; border-radius:50%; border:6px solid rgba(255,255,255,0.14); border-top-color:#fff; animation: spin 1s linear infinite;"></div>
+            <div style="color:#fff; font-weight:600;">Đang đăng nhập...</div>
+        </div>
+    </div>
+    <style>
+        /* Giữ keyframe spinner ở đây để đơn giản */
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+
+    <script src="script.js"></script> 
+</body>
+</html>

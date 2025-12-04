@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết nối SQL Server</title>
+    <link rel="icon" href="images/apache_orc_logo_icon_167862.png" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #121827 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background Image với Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/234.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            opacity: 1;
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        /* Animated Background Elements */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 188, 212, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(0, 188, 212, 0.08) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(30px, -30px);
+            }
+        }
+
+        .container {
+            max-width: 500px;
+            width: 90%;
+            background: rgba(31, 37, 51, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8),
+                        0 0 40px rgba(0, 188, 212, 0.2);
+            padding: 40px 30px;
+            text-align: center;
+            border: 1px solid rgba(0, 188, 212, 0.2);
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            color: #00bcd4;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 188, 212, 0.3);
+        }
+
+        h2 img {
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(0 2px 5px rgba(0, 188, 212, 0.4));
+        }
+
+        p.description {
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group img {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            opacity: 0.6;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px 12px 40px;
+            border: 1px solid #2e3547;
+            border-radius: 10px;
+            background-color: rgba(35, 41, 53, 0.8);
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #00bcd4;
+            box-shadow: 0 0 12px rgba(0, 188, 212, 0.6),
+                        inset 0 0 8px rgba(0, 188, 212, 0.1);
+            outline: none;
+            background-color: rgba(35, 41, 53, 0.95);
+        }
+
+        input::placeholder {
+            color: #888;
+        }
+
+        .note {
+            background: rgba(0, 188, 212, 0.1);
+            border-left: 4px solid #00bcd4;
+            padding: 12px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .alert {
+            padding: 16px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .alert.success {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(56, 142, 60, 0.1) 100%);
+            border-color: rgba(76, 175, 80, 0.5);
+            color: #4caf50;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+        }
+
+        .alert.success::before {
+            content: '✓ ';
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .alert.error {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.15) 0%, rgba(229, 57, 53, 0.1) 100%);
+            border-color: rgba(244, 67, 54, 0.5);
+            color: #ef5350;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.2);
+        }
+
+        .alert.error::before {
+            content: '✕ ';
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .alert.loading {
+            background: linear-gradient(135deg, rgba(0, 188, 212, 0.15) 0%, rgba(0, 172, 193, 0.1) 100%);
+            border-color: rgba(0, 188, 212, 0.5);
+            color: #00bcd4;
+            box-shadow: 0 4px 15px rgba(0, 188, 212, 0.2);
+            animation: slideDown 0.3s ease-out, pulse 1.5s ease-in-out infinite;
+        }
+
+        .alert.loading::before {
+            content: '⟳ ';
+            font-weight: bold;
+            font-size: 1.1em;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back {
+            background-color: #444c5c;
+            color: white;
+            border: 1px solid #555d6e;
+        }
+
+        .btn-back:hover {
+            background-color: #555c6e;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-back:active {
+            transform: translateY(0);
+        }
+
+        .btn-connect {
+            background: linear-gradient(45deg, #00bcd4, #00acc1);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-connect::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-connect:hover:not(:disabled) {
+            background: linear-gradient(45deg, #00acc1, #0097a7);
+            box-shadow: 0 6px 25px rgba(0, 188, 212, 0.6);
+            transform: translateY(-3px);
+        }
+
+        .btn-connect:hover:not(:disabled)::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-connect:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .btn-connect:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        @media screen and (max-width: 500px) {
+            .container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            h2 img {
+                width: 40px;
+                height: 40px;
+            }
+
+            button {
+                padding: 12px;
+                font-size: 13px;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: rgba(31, 37, 51, 0.98);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .modal-content.modal-large {
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-content.modal-large::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content.modal-large::-webkit-scrollbar-track {
+            background: rgba(0, 188, 212, 0.1);
+            border-radius: 10px;
+        }
+
+        .modal-content.modal-large::-webkit-scrollbar-thumb {
+            background: rgba(0, 188, 212, 0.5);
+            border-radius: 10px;
+        }
+
+        .modal-content.modal-large::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 188, 212, 0.7);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+            padding-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            color: #00bcd4;
+            font-size: 1.4em;
+            margin: 0;
+            text-shadow: 0 2px 10px rgba(0, 188, 212, 0.3);
+        }
+
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #00bcd4;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #aaa;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .required {
+            color: #ef5350;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #2e3547;
+            border-radius: 8px;
+            background-color: rgba(35, 41, 53, 0.8);
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            border-color: #00bcd4;
+            box-shadow: 0 0 12px rgba(0, 188, 212, 0.6);
+            outline: none;
+            background-color: rgba(35, 41, 53, 0.95);
+        }
+
+        .form-group input::placeholder {
+            color: #666;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #2e3547;
+            border-radius: 8px;
+            background-color: rgba(35, 41, 53, 0.8);
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #00bcd4;
+            box-shadow: 0 0 12px rgba(0, 188, 212, 0.6);
+            outline: none;
+            background-color: rgba(35, 41, 53, 0.95);
+        }
+
+        .form-group select option {
+            background-color: #232935;
+            color: #fff;
+        }
+
+        .form-group textarea::placeholder {
+            color: #666;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .alert-modal {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+            border: 1px solid;
+        }
+
+        .alert-modal.success {
+            background: rgba(76, 175, 80, 0.15);
+            border-color: rgba(76, 175, 80, 0.5);
+            color: #4caf50;
+        }
+
+        .alert-modal.error {
+            background: rgba(244, 67, 54, 0.15);
+            border-color: rgba(244, 67, 54, 0.5);
+            color: #ef5350;
+        }
+
+        .alert-modal.loading {
+            background: rgba(0, 188, 212, 0.15);
+            border-color: rgba(0, 188, 212, 0.5);
+            color: #00bcd4;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn-cancel, .btn-confirm {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel {
+            background-color: #444c5c;
+            color: white;
+            border: 1px solid #555d6e;
+        }
+
+        .btn-cancel:hover {
+            background-color: #555c6e;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-confirm {
+            background: linear-gradient(45deg, #00bcd4, #00acc1);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
+        }
+
+        .btn-confirm:hover:not(:disabled) {
+            background: linear-gradient(45deg, #00acc1, #0097a7);
+            box-shadow: 0 6px 25px rgba(0, 188, 212, 0.6);
+        }
+
+        .btn-confirm:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>
+            <img src="images/icons8-microsoft-sql-server-60.png" alt="SQL Icon">
+            Kết nối SQL Server
+        </h2>
+        <p class="description">Nhập thông tin kết nối SQL Server để tiến hành kết nối lần đầu.</p>
+
+        <div id="alertMessage" class="alert"></div>
+
+        <!-- Modal Form Thông Tin Nhân Viên -->
+        <div id="employeeModal" class="modal" style="display: none;">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>Thông Tin Nhân Viên</h3>
+                    <span class="close-btn" onclick="closeEmployeeModal()">&times;</span>
+                </div>
+                <form id="employeeForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tennhanvien">Tên Nhân Viên: <span class="required">*</span></label>
+                            <input type="text" id="tennhanvien" placeholder="Nhập tên nhân viên" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="namsinh">Năm Sinh: <span class="required">*</span></label>
+                            <input type="number" id="namsinh" placeholder="YYYY" min="1900" max="2099" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="gioitinh">Giới Tính: <span class="required">*</span></label>
+                            <select id="gioitinh" required>
+                                <option value="">Chọn giới tính</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dienthoai">Điện Thoại: <span class="required">*</span></label>
+                            <input type="tel" id="dienthoai" placeholder="Nhập số điện thoại" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cmnd">CMND/CCCD:</label>
+                            <input type="text" id="cmnd" placeholder="Nhập CMND/CCCD">
+                        </div>
+                        <div class="form-group">
+                            <label for="vitri">Vị Trí:</label>
+                            <input type="text" id="vitri" placeholder="Nhập vị trí">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="congviec">Công Việc:</label>
+                            <input type="text" id="congviec" placeholder="Nhập công việc">
+                        </div>
+                        <div class="form-group">
+                            <label for="mucluong">Mức Lương:</label>
+                            <input type="number" id="mucluong" placeholder="Nhập mức lương">
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="diachi">Địa Chỉ:</label>
+                        <input type="text" id="diachi" placeholder="Nhập địa chỉ">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="ghichu">Ghi Chú:</label>
+                        <textarea id="ghichu" placeholder="Nhập ghi chú (nếu có)" rows="3"></textarea>
+                    </div>
+                    <div id="employeeAlert" class="alert-modal"></div>
+                    <div class="modal-buttons">
+                        <button type="button" class="btn-cancel" onclick="closeEmployeeModal()">Hủy Bỏ</button>
+                        <button type="submit" class="btn-confirm">Tiếp Tục</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Form Đăng Ký Tài Khoản -->
+        <div id="accountModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Đăng Ký Tài Khoản</h3>
+                    <span class="close-btn" onclick="closeAccountModal()">&times;</span>
+                </div>
+                <form id="accountForm">
+                    <div class="form-group">
+                        <label for="accountName" style="text-align: left;" >Tên Đăng Nhập:</label>
+                        <input type="text" id="accountName" placeholder="Nhập tên đăng nhập" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="accountPassword" style="text-align: left;" >Mật Khẩu:</label>
+                        <input type="password" id="accountPassword" placeholder="Nhập mật khẩu" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword" style="text-align: left;" >Xác Nhận Mật Khẩu:</label>
+                        <input type="password" id="confirmPassword" placeholder="Xác nhận mật khẩu" required>
+                    </div>
+                    <div id="accountAlert" class="alert-modal"></div>
+                    <div class="modal-buttons">
+                        <button type="button" class="btn-cancel" onclick="closeAccountModal()">Hủy Bỏ</button>
+                        <button type="submit" class="btn-confirm">Xác Nhận</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <form id="sqlConnectForm">
+            <div class="input-group">
+                <img src="images/icons8-sql-64.png" alt="Server Icon">
+                <input type="text" id="serverName" name="serverName" placeholder="Server Name (ví dụ: localhost\\SQLEXPRESS)" required>
+            </div>
+            <div class="input-group">
+                <img src="images/icons8-sql-64.png" alt="Database Icon">
+                <input type="text" id="databaseName" name="databaseName" placeholder="Database Name (ví dụ: MyDatabase)" required>
+            </div>
+            <div class="input-group">
+                <img src="images/icons8-id-verified-64.png" alt="User Icon">
+                <input type="text" id="username" name="username" placeholder="Username (SQL)">
+            </div>
+            <div class="input-group">
+                <img src="images/icons8-password-key-64.png" alt="Password Icon">
+                <input type="password" id="password" name="password" placeholder="Password">
+            </div>
+
+            <div class="note" style="color: white;size: 25px;">
+                💡 Chỉ áp dụng cho khách hàng dùng SQL SERVER.
+            </div>
+
+            <div class="buttons">
+                <button type="button" class="btn-back" onclick="goBack()">Quay lại</button>
+                <button type="submit" class="btn-connect">Kết nối SQL</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let connectionData = null;
+        let employeeData = null;
+
+        function goBack() {
+            window.location.href = 'Home.html';
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert ${type}`;
+            alertDiv.style.display = 'block';
+        }
+
+        function hideAlert() {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.style.display = 'none';
+        }
+
+        function openEmployeeModal() {
+            document.getElementById('employeeModal').style.display = 'flex';
+            document.getElementById('employeeForm').reset();
+            document.getElementById('employeeAlert').style.display = 'none';
+        }
+
+        function closeEmployeeModal() {
+            document.getElementById('employeeModal').style.display = 'none';
+            document.getElementById('employeeForm').reset();
+            document.getElementById('employeeAlert').style.display = 'none';
+        }
+
+        function openAccountModal() {
+            document.getElementById('accountModal').style.display = 'flex';
+            document.getElementById('accountForm').reset();
+            document.getElementById('accountAlert').style.display = 'none';
+        }
+
+        function closeAccountModal() {
+            document.getElementById('accountModal').style.display = 'none';
+            document.getElementById('accountForm').reset();
+            document.getElementById('accountAlert').style.display = 'none';
+        }
+
+        function showEmployeeAlert(message, type) {
+            const alertDiv = document.getElementById('employeeAlert');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert-modal ${type}`;
+            alertDiv.style.display = 'block';
+        }
+
+        function showAccountAlert(message, type) {
+            const alertDiv = document.getElementById('accountAlert');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert-modal ${type}`;
+            alertDiv.style.display = 'block';
+        }
+
+        // Xử lý form kết nối SQL
+        document.getElementById('sqlConnectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const serverName = document.getElementById('serverName').value;
+            const databaseName = document.getElementById('databaseName').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const connectBtn = document.querySelector('.btn-connect');
+
+            if (!serverName || !databaseName) {
+                showAlert('Vui lòng nhập Server Name và Database Name', 'error');
+                return;
+            }
+
+            try {
+                showAlert('Đang kiểm tra kết nối...', 'loading');
+                connectBtn.disabled = true;
+
+                const response = await fetch('/api/test-connection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        serverName,
+                        databaseName,
+                        username: username || null,
+                        password: password || null,
+                        useWindowAuth: !username && !password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('Kết nối thành công! Sẵn sàng sử dụng.', 'success');
+                    connectionData = {
+                        serverName,
+                        databaseName,
+                        username: username || null,
+                        password: password || null,
+                        useWindowAuth: !username && !password
+                    };
+                    
+                    setTimeout(() => {
+                        openEmployeeModal();
+                    }, 1500);
+                } else {
+                    showAlert(data.message || 'Lỗi kết nối. Vui lòng kiểm tra thông tin.', 'error');
+                }
+            } catch (error) {
+                showAlert(error.message || 'Có lỗi xảy ra. Vui lòng thử lại.', 'error');
+            } finally {
+                connectBtn.disabled = false;
+            }
+        });
+
+        // Xử lý form thông tin nhân viên
+        document.getElementById('employeeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const tennhanvien = document.getElementById('tennhanvien').value.trim();
+            const namsinh = document.getElementById('namsinh').value;
+            const gioitinh = document.getElementById('gioitinh').value;
+            const dienthoai = document.getElementById('dienthoai').value.trim();
+            
+            // Các trường không bắt buộc
+            const cmnd = document.getElementById('cmnd').value.trim();
+            const vitri = document.getElementById('vitri').value.trim();
+            const congviec = document.getElementById('congviec').value.trim();
+            const mucluong = document.getElementById('mucluong').value;
+            const diachi = document.getElementById('diachi').value.trim();
+            const ghichu = document.getElementById('ghichu').value.trim();
+            const idvaitro = '160120160000'; // ID vai trò mặc định
+            const submitBtn = document.querySelector('#employeeForm .btn-confirm');
+
+            // Validate chỉ 4 trường bắt buộc
+            if (!tennhanvien) {
+                showEmployeeAlert('Vui lòng nhập Tên Nhân Viên', 'error');
+                return;
+            }
+
+            if (!namsinh) {
+                showEmployeeAlert('Vui lòng nhập Năm Sinh', 'error');
+                return;
+            }
+
+            if (namsinh < 1900 || namsinh > new Date().getFullYear()) {
+                showEmployeeAlert('Năm sinh không hợp lệ', 'error');
+                return;
+            }
+
+            if (!gioitinh) {
+                showEmployeeAlert('Vui lòng chọn Giới Tính', 'error');
+                return;
+            }
+
+            if (!dienthoai) {
+                showEmployeeAlert('Vui lòng nhập Số Điện Thoại', 'error');
+                return;
+            }
+
+            try {
+                showEmployeeAlert('Đang xử lý...', 'loading');
+                submitBtn.disabled = true;
+
+                const response = await fetch('/api/create-employee', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        connectionData,
+                        tennhanvien,
+                        namsinh: parseInt(namsinh),
+                        gioitinh: gioitinh === 'Nam' ? 1 : 0, // Nam = 1, Nữ = 0
+                        cmnd: cmnd || '',
+                        dienthoai,
+                        vitri: vitri || '',
+                        congviec: congviec || '',
+                        mucluong: mucluong ? parseInt(mucluong) : 0,
+                        diachi: diachi || '',
+                        ghichu: ghichu || '',
+                        idvaitro: parseInt(idvaitro)
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    employeeData = result.data;
+                    showEmployeeAlert('Thông tin nhân viên được tạo thành công!', 'success');
+                    setTimeout(() => {
+                        closeEmployeeModal();
+                        openAccountModal();
+                    }, 1500);
+                } else {
+                    showEmployeeAlert(result.message || 'Lỗi khi tạo thông tin nhân viên', 'error');
+                }
+            } catch (error) {
+                showEmployeeAlert(error.message || 'Có lỗi xảy ra', 'error');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Xử lý form đăng ký tài khoản
+        document.getElementById('accountForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const accountName = document.getElementById('accountName').value.trim();
+            const accountPassword = document.getElementById('accountPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const confirmBtn = document.querySelector('#accountForm .btn-confirm');
+
+            // Validate
+            if (!accountName) {
+                showAccountAlert('Vui lòng nhập tên đăng nhập', 'error');
+                return;
+            }
+
+            if (!accountPassword) {
+                showAccountAlert('Vui lòng nhập mật khẩu', 'error');
+                return;
+            }
+
+            if (accountPassword.length < 6) {
+                showAccountAlert('Mật khẩu phải có ít nhất 6 ký tự', 'error');
+                return;
+            }
+
+            if (accountPassword !== confirmPassword) {
+                showAccountAlert('Mật khẩu xác nhận không khớp', 'error');
+                return;
+            }
+
+            try {
+                showAccountAlert('Đang xử lý...', 'loading');
+                confirmBtn.disabled = true;
+
+                const response = await fetch('/api/create-account', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        connectionData,
+                        employeeData,
+                        account: accountName,
+                        password: confirmPassword
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAccountAlert('Tài khoản được tạo thành công!', 'success');
+                    setTimeout(() => {
+                        closeAccountModal();
+                        showAlert('✅ Hoàn tất! Tài khoản đã được tạo .', 'success');
+                    }, 1500);
+                } else {
+                    showAccountAlert(result.message || 'Lỗi khi tạo tài khoản', 'error');
+                }
+            } catch (error) {
+                showAccountAlert(error.message || 'Có lỗi xảy ra', 'error');
+            } finally {
+                confirmBtn.disabled = false;
+            }
+        });
+
+        // Đóng modal khi nhấp ngoài
+        window.addEventListener('click', (e) => {
+            const employeeModal = document.getElementById('employeeModal');
+            const accountModal = document.getElementById('accountModal');
+            if (e.target === employeeModal) {
+                closeEmployeeModal();
+            }
+            if (e.target === accountModal) {
+                closeAccountModal();
+            }
+        });
+    </script>
+</body>
+</html>
