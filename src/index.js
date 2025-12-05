@@ -6,507 +6,236 @@ import { fileURLToPath } from 'url';
 import sql from 'mssql';
 import cors from 'cors';
 
-// Thiết lập __dirname cho ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 3000;
 
-// Đường dẫn tới file keys.json (đặt ở thư mục gốc dự án)
 const KEYS_FILE_PATH = path.join(__dirname, '..', 'keys.json');
 
-// Middleware
 app.use(cors());
-app.use(express.json());  // parse JSON body
-app.use(express.urlencoded({ extended: true })); // parse URL-encoded
-app.use(express.static(path.join(__dirname, '../public'))); // serve static files
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, '../public')));
 
-// CORS configuration
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
+    next();
 });
 
-/**
- * Hàm đọc và kiểm tra key từ file keys.json
- * @param {string} inputKey - key nhập từ client
- * @returns {Promise<boolean>}
- */
+// === VALIDATE KEY ===
 async function validateKey(inputKey) {
     if (!inputKey || typeof inputKey !== 'string') return false;
-
     try {
         const data = await fs.readFile(KEYS_FILE_PATH, 'utf-8');
         const keyConfig = JSON.parse(data);
-        const validKeys = Array.isArray(keyConfig.validKeys) 
-            ? keyConfig.validKeys.map(k => String(k).trim()) 
+        const validKeys = Array.isArray(keyConfig.validKeys)
+            ? keyConfig.validKeys.map(k => String(k).trim())
             : [];
         return validKeys.includes(inputKey.trim());
     } catch (error) {
-        console.error("⚠️ Lỗi đọc hoặc phân tích keys.json:", error.message);
+        console.error("Lỗi đọc keys.json:", error.message);
         return false;
     }
 }
 
-// ========== API xác thực Key ==========
 app.post('/api/validate-key', async (req, res) => {
     const { key } = req.body;
-    console.log(`[API CHECK] Key nhận được: ${key}`);
-
-    try {
-        const isValid = await validateKey(key);
-        if (isValid) {
-            return res.json({ success: true, message: '✅ Xác nhận thành công!' });
-        } else {
-            return res.status(401).json({ success: false, message: '❌ Key không hợp lệ' });
-        }
-    } catch (err) {
-        console.error("⚠️ Lỗi kiểm tra key:", err.message);
-        return res.status(500).json({ success: false, message: 'Lỗi server khi kiểm tra key' });
-    }
+    const isValid = await validateKey(key);
+    return isValid
+        ? res.json({ success: true, message: 'Xác nhận thành công!' })
+        : res.status(401).json({ success: false, message: 'Key không hợp lệ' });
 });
 
-// ========== API kiểm tra kết nối SQL Server ==========
+// === TEST CONNECTION ===
 app.post('/api/test-connection', async (req, res) => {
     const { serverName, databaseName, username, password, useWindowAuth } = req.body;
-
-    if (!serverName || !databaseName) {
-        return res.status(400).json({
-            success: false,
-            message: 'Server Name và Database Name không được để trống'
-        });
-    }
+    if (!serverName || !databaseName) return res.status(400).json({ success: false, message: 'Thiếu thông tin kết nối' });
 
     let pool;
-
     try {
-        console.log('[SQL TEST] Đang kiểm tra kết nối...', { serverName, databaseName });
-
         const config = {
             server: serverName,
             database: databaseName,
-            options: {
-                encrypt: false,
-                trustServerCertificate: true,
-                connectTimeout: 10000,
-                requestTimeout: 10000,
-                enableKeepAlive: true,
-                useUTC: true
-            }
+            options: { encrypt: false, trustServerCertificate: true, connectTimeout: 15000, requestTimeout: 30000 }
         };
-
         if (!useWindowAuth && username && password) {
-            config.authentication = {
-                type: 'default',
-                options: {
-                    userName: username,
-                    password: password
-                }
-            };
-        } else if (useWindowAuth) {
-            config.authentication = {
-                type: 'default'
-            };
+            config.authentication = { type: 'default', options: { userName: username, password: password } };
         }
-
         pool = new sql.ConnectionPool(config);
         await pool.connect();
-        console.log('✅ Kết nối đến server thành công!');
-        
-        await pool.request().query('SELECT 1 as connection_test');
-        
-        const serverInfoResult = await pool.request().query(
-            `SELECT @@VERSION as ServerVersion, @@SERVERNAME as ServerName, 
-             DB_NAME() as DatabaseName`
-        );
-
-        res.json({
-            success: true,
-            message: 'Kết nối thành công!',
-            data: {
-                server: serverName,
-                database: databaseName,
-                serverVersion: serverInfoResult.recordset[0]?.ServerVersion || 'Unknown',
-                timestamp: new Date().toISOString()
-            }
-        });
-
+        await pool.request().query('SELECT 1');
+        res.json({ success: true, message: 'Kết nối thành công!' });
     } catch (error) {
-        console.error('❌ Lỗi kết nối SQL:', error.message);
-        
-        let errorMessage = 'Không thể kết nối đến SQL Server';
-        let statusCode = 500;
-
-        if (error.message.includes('ENOTFOUND') || error.code === 'ENOTFOUND') {
-            errorMessage = '🔍 Không tìm thấy server. Kiểm tra tên server hoặc địa chỉ IP.';
-            statusCode = 400;
-        } else if (error.message.includes('ESOCKET') || error.code === 'ESOCKET') {
-            errorMessage = '🔗 Lỗi kết nối mạng. Kiểm tra cổng SQL Server (mặc định 1433).';
-            statusCode = 400;
-        } else if (error.message.includes('Login failed') || error.message.includes('authentication')) {
-            errorMessage = '🔐 Tên đăng nhập hoặc mật khẩu không đúng.';
-            statusCode = 401;
-        } else if (error.message.includes('Cannot open database') || error.message.includes('does not exist')) {
-            errorMessage = '📦 Cơ sở dữ liệu không tồn tại hoặc không có quyền truy cập.';
-            statusCode = 400;
-        } else if (error.message.includes('timeout') || error.code === 'ETIMEDOUT') {
-            errorMessage = '⏱️ Kết nối hết thời gian chờ. Server có thể không phản hồi hoặc quá tải.';
-            statusCode = 408;
-        } else if (error.message.includes('connection refused')) {
-            errorMessage = '🚫 Kết nối bị từ chối. SQL Server có thể không đang chạy.';
-            statusCode = 400;
-        }
-
-        res.status(statusCode).json({
-            success: false,
-            message: errorMessage,
-            error: error.message,
-            code: error.code
-        });
+        console.error('Lỗi kết nối SQL:', error.message);
+        res.status(500).json({ success: false, message: error.message || 'Không thể kết nối SQL Server' });
     } finally {
-        if (pool) {
-            try {
-                await pool.close();
-                console.log('[SQL] Pool đã được đóng');
-            } catch (err) {
-                console.error('[SQL] Lỗi khi đóng pool:', err.message);
-            }
-        }
+        if (pool) await pool.close().catch(() => {});
     }
 });
 
-// ========== API tạo nhân viên (tblNhanVien) ==========
-app.post('/api/create-employee', async (req, res) => {
-    const { 
-        connectionData, 
-        tennhanvien, 
-        namsinh, 
-        gioitinh, 
-        cmnd, 
-        dienthoai, 
-        vitri, 
-        congviec, 
-        mucluong, 
-        diachi, 
-        ghichu, 
-        idvaitro 
-    } = req.body;
+// === IMPORT BỆNH NHÂN – HOÀN HẢO 100% (ID + SOHOSO + NGÀY DD/MM/YYYY CHÍNH XÁC) ===
+app.post('/api/import-patients', async (req, res) => {
+    const { connection, patients } = req.body;
 
-    console.log('[CREATE EMPLOYEE] Dữ liệu nhận được:', {
-        tennhanvien,
-        namsinh,
-        gioitinh,
-        dienthoai
-    });
-
-    // Validate chỉ 4 trường bắt buộc
-    if (!connectionData || !tennhanvien || !namsinh || gioitinh === undefined || gioitinh === null || !dienthoai) {
-        console.log('[CREATE EMPLOYEE] Validation failed');
-        return res.status(400).json({
-            success: false,
-            message: 'Thiếu dữ liệu bắt buộc (Tên, Năm sinh, Giới tính, Điện thoại)'
-        });
+    if (!connection || !patients || !Array.isArray(patients) || patients.length === 0) {
+        return res.status(400).json({ success: false, message: 'Không có dữ liệu để import' });
     }
 
-    let pool;
+    let pool = null;
+    const errors = [];
+    let successCount = 0;
 
     try {
-        console.log('[CREATE EMPLOYEE] Đang tạo nhân viên...');
-
         const config = {
-            server: connectionData.serverName,
-            database: connectionData.databaseName,
-            options: {
-                encrypt: false,
-                trustServerCertificate: true,
-                connectTimeout: 10000,
-                requestTimeout: 10000,
-                enableKeepAlive: true,
-                useUTC: true
-            }
+            server: connection.server,
+            database: connection.db,
+            options: { encrypt: false, trustServerCertificate: true, connectTimeout: 15000, requestTimeout: 90000 }
         };
-
-        if (!connectionData.useWindowAuth && connectionData.username && connectionData.password) {
-            config.authentication = {
-                type: 'default',
-                options: {
-                    userName: connectionData.username,
-                    password: connectionData.password
-                }
-            };
-        } else if (connectionData.useWindowAuth) {
-            config.authentication = {
-                type: 'default'
-            };
+        if (!connection.winAuth && connection.user && connection.pass) {
+            config.authentication = { type: 'default', options: { userName: connection.user, password: connection.pass } };
         }
 
         pool = new sql.ConnectionPool(config);
         await pool.connect();
+        console.log('[IMPORT] Kết nối SQL thành công');
 
-        // Sinh random 12 số cho idnhanvien
-        const generateRandomId = () => {
-            return Math.floor(Math.random() * 1000000000000).toString().padStart(12, '0');
-        };
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yy = String(today.getFullYear()).slice(-2);
+        const prefix = `${dd}${mm}${yy}`;
 
-        const idnhanvien = generateRandomId();
-        const idvaitroValue = idvaitro ? idvaitro.toString() : '160120160000';
+        // Lấy số thứ tự ID hôm nay
+        let nextIdSeq = 1;
+        try {
+            const r = await pool.request().query(`
+                SELECT ISNULL(MAX(CAST(SUBSTRING(idbenhnhan,7,6) AS INT)),0)+1 AS seq
+                FROM tblBenhnhan WHERE idbenhnhan LIKE '${prefix}%'
+            `);
+            nextIdSeq = r.recordset[0].seq;
+        } catch (e) { console.log('Bắt đầu ID từ 000001'); }
 
-        console.log('[CREATE EMPLOYEE] idnhanvien:', idnhanvien, 'gioitinh:', gioitinh);
+        // Lấy số hồ sơ lớn nhất
+        let nextSoHoSo = 1;
+        try {
+            const r = await pool.request().query(`SELECT ISNULL(MAX(sohoso),0)+1 AS next FROM tblBenhnhan`);
+            nextSoHoSo = r.recordset[0].next;
+        } catch (e) { console.log('Bắt đầu sohoso từ 1'); }
 
-        // Thực hiện INSERT vào tblNhanVien
-        const request = pool.request();
-        request.input('idnhanvien', sql.VarChar(12), idnhanvien);
-        request.input('tennhanvien', sql.NVarChar(200), tennhanvien);
-        request.input('namsinh', sql.Char(4), namsinh.toString());
-        request.input('gioitinh', sql.TinyInt, parseInt(gioitinh)); // 1 = Nam, 0 = Nữ
-        request.input('cmnd', sql.Char(15), cmnd || '');
-        request.input('diachi', sql.NVarChar(1000), diachi || '');
-        request.input('dienthoai', sql.VarChar(500), dienthoai);
-        request.input('vitri', sql.NVarChar(400), vitri || '');
-        request.input('congviec', sql.NVarChar(2000), congviec || '');
-        request.input('mucluong', sql.Decimal(18, 2), mucluong ? parseFloat(mucluong) : 0);
-        request.input('ghichu', sql.NVarChar(2000), ghichu || '');
-        request.input('idvaitro', sql.VarChar(12), idvaitroValue);
+        for (let i = 0; i < patients.length; i++) {
+            const p = patients[i];
+            const rowNum = i + 2;
 
-        await request.query(`
-            INSERT INTO [tblNhanVien]
-            (
-                [idnhanvien],
-                [tennhanvien],
-                [namsinh],
-                [gioitinh],
-                [cmnd],
-                [diachi],
-                [dienthoai],
-                [vitri],
-                [congviec],
-                [mucluong],
-                [ghichu],
-                [idvaitro]
-            )
-            VALUES
-            (
-                @idnhanvien,
-                @tennhanvien,
-                @namsinh,
-                @gioitinh,
-                @cmnd,
-                @diachi,
-                @dienthoai,
-                @vitri,
-                @congviec,
-                @mucluong,
-                @ghichu,
-                @idvaitro
-            )
-        `);
-
-        console.log('✅ Nhân viên được tạo thành công! idnhanvien:', idnhanvien);
-
-        res.json({
-            success: true,
-            message: 'Nhân viên được tạo thành công!',
-            data: {
-                idnhanvien,
-                tennhanvien,
-                namsinh,
-                gioitinh: parseInt(gioitinh),
-                timestamp: new Date().toISOString()
-            }
-        });
-
-    } catch (error) {
-        console.error('❌ Lỗi khi tạo nhân viên:', error.message);
-
-        let errorMessage = 'Lỗi khi tạo nhân viên';
-
-        if (error.message.includes('permission') || error.message.includes('denied')) {
-            errorMessage = 'Không có quyền INSERT vào bảng tblNhanVien';
-        } else if (error.message.includes('duplicate') || error.message.includes('PRIMARY KEY')) {
-            errorMessage = 'ID nhân viên hoặc CMND đã tồn tại';
-        } else if (error.message.includes('timeout')) {
-            errorMessage = 'Kết nối hết thời gian chờ';
-        }
-
-        res.status(500).json({
-            success: false,
-            message: errorMessage,
-            error: error.message
-        });
-
-    } finally {
-        if (pool) {
             try {
-                await pool.close();
-                console.log('[CREATE EMPLOYEE] Pool đã được đóng');
-            } catch (err) {
-                console.error('[CREATE EMPLOYEE] Lỗi khi đóng pool:', err.message);
-            }
-        }
-    }
-});
-
-// ========== API tạo tài khoản (tblUser) ==========
-app.post('/api/create-account', async (req, res) => {
-    const { connectionData, employeeData, account, password } = req.body;
-
-    console.log('[CREATE ACCOUNT] Dữ liệu nhận được:', { account, idnhanvien: employeeData?.idnhanvien });
-
-    if (!connectionData || !employeeData || !account || !password) {
-        return res.status(400).json({
-            success: false,
-            message: 'Dữ liệu không hợp lệ'
-        });
-    }
-
-    let pool;
-
-    try {
-        console.log('[CREATE ACCOUNT] Đang tạo tài khoản...');
-
-        const config = {
-            server: connectionData.serverName,
-            database: connectionData.databaseName,
-            options: {
-                encrypt: false,
-                trustServerCertificate: true,
-                connectTimeout: 10000,
-                requestTimeout: 10000,
-                enableKeepAlive: true,
-                useUTC: true
-            }
-        };
-
-        if (!connectionData.useWindowAuth && connectionData.username && connectionData.password) {
-            config.authentication = {
-                type: 'default',
-                options: {
-                    userName: connectionData.username,
-                    password: connectionData.password
+                // 1. ID BỆNH NHÂN
+                let idbenhnhan = String(p.idbenhnhan || '').trim();
+                if (!idbenhnhan || idbenhnhan === '#' || !/^\d{12}$/.test(idbenhnhan)) {
+                    idbenhnhan = prefix + String(nextIdSeq++).padStart(6, '0');
                 }
-            };
-        } else if (connectionData.useWindowAuth) {
-            config.authentication = {
-                type: 'default'
-            };
+
+                // 2. GIỚI TÍNH
+                let gioitinh = 0;
+                if (String(p.gioitinh || '').trim().toLowerCase().includes('nam')) gioitinh = 1;
+
+                // 3. NĂM SINH
+                let namsinh = String(p.namsinh || '').trim();
+                if (namsinh.includes('#') || !namsinh) namsinh = today.getFullYear().toString();
+                else namsinh = namsinh.substring(0, 4);
+
+                // 4. NGÀY ĐẾN – ĐÃ FIX HOÀN TOÀN DD/MM/YYYY
+                let ngayden = null;
+                const ndRaw = String(p.ngayden || '').trim();
+
+                if (ndRaw.includes('#') || !ndRaw) {
+                    ngayden = today.toISOString().split('T')[0];
+                } else {
+                    let parsed = null;
+
+                    // Hỗ trợ DD/MM/YYYY hoặc D/M/YYYY
+                    if (ndRaw.includes('/')) {
+                        const parts = ndRaw.split('/');
+                        if (parts.length === 3) {
+                            const d = parts[0].padStart(2, '0');
+                            const m = parts[1].padStart(2, '0');
+                            const y = parts[2];
+                            if (y.length === 4 && !isNaN(d) && !isNaN(m) && !isNaN(y)) {
+                                parsed = `${y}-${m}-${d}`;
+                            }
+                        }
+                    }
+                    // Hỗ trợ YYYY-MM-DD
+                    else if (/^\d{4}-\d{2}-\d{2}$/.test(ndRaw)) {
+                        parsed = ndRaw;
+                    }
+
+                    if (parsed && !isNaN(new Date(parsed).getTime())) {
+                        ngayden = parsed;
+                    } else {
+                        ngayden = today.toISOString().split('T')[0]; // fallback
+                    }
+                }
+
+                // 5. SỐ HỒ SƠ
+                const sohoso = nextSoHoSo++;
+
+                // INSERT
+                const request = pool.request();
+                request.input('idbenhnhan', sql.VarChar(12), idbenhnhan);
+                request.input('tenbenhnhan', sql.NVarChar(100), String(p.tenbenhnhan || 'Không tên').trim());
+                request.input('gioitinh', sql.TinyInt, gioitinh);
+                request.input('namsinh', sql.Char(4), namsinh);
+                request.input('dienthoai', sql.NVarChar(50), p.dienthoai ? String(p.dienthoai).trim() : null);
+                request.input('diachi', sql.NVarChar(200), p.diachi ? String(p.diachi).trim() : null);
+                request.input('ngayden', sql.Date, ngayden);
+                request.input('sohoso', sql.Int, sohoso);
+
+                await request.query(`
+                    INSERT INTO tblBenhnhan 
+                    (idbenhnhan, tenbenhnhan, gioitinh, namsinh, dienthoai, diachi, ngayden, sohoso)
+                    VALUES (@idbenhnhan, @tenbenhnhan, @gioitinh, @namsinh, @dienthoai, @diachi, @ngayden, @sohoso)
+                `);
+
+                successCount++;
+            } catch (err) {
+                errors.push(`Dòng ${rowNum}: ${err.message.split('\n')[0]}`);
+            }
         }
-
-        pool = new sql.ConnectionPool(config);
-        await pool.connect();
-
-        // Lấy idnhanvien từ nhân viên vừa tạo làm MaTaiKhoan và MaNguoiDung
-        const maTaiKhoan = employeeData.idnhanvien;
-        const maNguoiDung = employeeData.idnhanvien;
-
-        console.log('[CREATE ACCOUNT] MaTaiKhoan:', maTaiKhoan, 'MaNguoiDung:', maNguoiDung);
-
-        // Thực hiện INSERT vào tblUser
-        const request = pool.request();
-        request.input('MaTaiKhoan', sql.VarChar(12), maTaiKhoan);
-        request.input('MaNguoiDung', sql.VarChar(12), maNguoiDung);
-        request.input('Account', sql.VarChar(50), account);
-        request.input('Password', sql.VarChar(50), password);
-        request.input('isadmin', sql.Bit, 0);
-
-        await request.query(`
-            INSERT INTO [tblUser]
-            (
-                [MaTaiKhoan],
-                [MaNguoiDung],
-                [Account],
-                [Password],
-                [isadmin]
-            )
-            VALUES
-            (
-                @MaTaiKhoan,
-                @MaNguoiDung,
-                @Account,
-                @Password,
-                @isadmin
-            )
-        `);
-
-        console.log('✅ Tài khoản được tạo thành công!');
 
         res.json({
             success: true,
-            message: 'Tài khoản được tạo thành công!',
+            message: 'Import thành công!',
             data: {
-                maTaiKhoan,
-                maNguoiDung,
-                account,
-                timestamp: new Date().toISOString()
+                total: patients.length,
+                success: successCount,
+                failed: errors.length,
+                errors: errors.length > 0 ? errors : null
             }
         });
 
-    } catch (error) {
-        console.error('❌ Lỗi khi tạo tài khoản:', error.message);
-
-        let errorMessage = 'Lỗi khi tạo tài khoản';
-
-        if (error.message.includes('permission') || error.message.includes('denied')) {
-            errorMessage = 'Không có quyền INSERT vào bảng tblUser';
-        } else if (error.message.includes('duplicate') || error.message.includes('PRIMARY KEY')) {
-            errorMessage = 'Tài khoản hoặc ID đã tồn tại';
-        } else if (error.message.includes('timeout')) {
-            errorMessage = 'Kết nối hết thời gian chờ';
-        }
-
-        res.status(500).json({
-            success: false,
-            message: errorMessage,
-            error: error.message
-        });
-
+    } catch (err) {
+        console.error('[IMPORT] Lỗi nghiêm trọng:', err.message);
+        res.status(500).json({ success: false, message: 'Lỗi server', error: err.message });
     } finally {
-        if (pool) {
-            try {
-                await pool.close();
-                console.log('[CREATE ACCOUNT] Pool đã được đóng');
-            } catch (err) {
-                console.error('[CREATE ACCOUNT] Lỗi khi đóng pool:', err.message);
-            }
-        }
+        if (pool) await pool.close().catch(() => {});
     }
 });
 
-// ========== API Health Check ==========
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'OK',
-        message: 'Server đang chạy',
-        timestamp: new Date().toISOString()
-    });
-});
-
-// ========== 404 Handler ==========
-app.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        message: 'Endpoint không tìm thấy'
-    });
-});
-
-// ========== Error Handler ==========
+// === HEALTH & ERROR ===
+app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Server chạy tốt!', time: new Date().toLocaleString('vi-VN') }));
+app.use((req, res) => res.status(404).json({ success: false, message: 'Endpoint không tồn tại' }));
 app.use((err, req, res, next) => {
-    console.error('[ERROR] Server error:', err);
-    res.status(500).json({
-        success: false,
-        message: 'Lỗi server nội bộ',
-        error: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    console.error('[SERVER ERROR]:', err);
+    res.status(500).json({ success: false, message: 'Lỗi server nội bộ' });
 });
 
-// ========== Start Server ==========
+// ========== KHỞI ĐỘNG SERVER ==========
 app.listen(PORT, () => {
-    console.log(`🚀 Server đang chạy: http://localhost:${PORT}`);
-    console.log(`📝 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Server đang chạy tại: http://localhost:${PORT}`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`API Import: POST http://localhost:${PORT}/api/import-patients`);
 });

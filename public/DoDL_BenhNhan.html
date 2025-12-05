@@ -1,285 +1,378 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Upload Excel Bệnh Nhân</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<link rel="icon" href="images/apache_orc_logo_icon_167862.png" type="image/x-icon">
-<style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{
-        font-family:"Segoe UI",sans-serif;
-        min-height:100vh;
-        background:linear-gradient(135deg,#1e3c72 0%,#2a5298 50%,#121827 100%);
-        background-image:url('images/234.png');
-        background-size:cover;background-position:center;background-attachment:fixed;
-        display:flex;align-items:flex-start;justify-content:center;padding:30px 20px;
-    }
-    body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:-1;}
-    
-    .container{
-        width:98%;max-width:1650px;background:rgba(31,37,51,0.98);border-radius:20px;
-        box-shadow:0 25px 70px rgba(0,0,0,0.8);padding:40px;
-        border:1px solid rgba(0,188,212,0.35);backdrop-filter:blur(14px);position:relative;margin-top:20px;
-    }
-    .close-btn{
-        position:absolute;top:15px;right:22px;font-size:34px;color:#ccc;cursor:pointer;transition:0.3s;
-    }
-    .close-btn:hover{color:#00bcd4;transform:scale(1.25) rotate(90deg);}
-    h1{
-        text-align:center;color:#00bcd4;font-size:2.4em;margin-bottom:35px;
-        text-shadow:0 3px 12px rgba(0,188,212,0.5);letter-spacing:1px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đổ Dữ Liệu Bệnh Nhân</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:"Segoe UI",sans-serif;min-height:100vh;background:linear-gradient(135deg,#1e3c72,#2a5298,#121827);background-image:url('images/234.png');background-size:cover;background-attachment:fixed;display:flex;align-items:flex-start;justify-content:center;padding:30px 20px;color:#e0e0e0}
+        body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:-1}
+        .container{width:98%;max-width:1650px;background:rgba(31,37,51,0.98);border-radius:20px;box-shadow:0 25px 70px rgba(0,0,0,0.8);padding:40px;border:1px solid rgba(0,188,212,0.35);backdrop-filter:blur(14px);position:relative;margin-top:20px}
+        .close-btn{position:absolute;top:15px;right:22px;font-size:34px;color:#ccc;cursor:pointer;transition:.3s}
+        .close-btn:hover{color:#00bcd4;transform:scale(1.25) rotate(90deg)}
+        h1{text-align:center;color:#00bcd4;font-size:2.4em;margin-bottom:35px;text-shadow:0 3px 12px rgba(0,188,212,0.5);letter-spacing:1px}
+        .upload-area{text-align:center;padding:40px 30px;background:rgba(0,188,212,0.12);border:2px dashed #00bcd4;border-radius:18px;transition:all .4s;margin-bottom:35px;cursor:pointer}
+        .upload-area:hover{background:rgba(0,188,212,0.2);border-color:#00e5ff}
+        .upload-area.dragover{background:rgba(0,188,212,0.28);border-color:#00e5ff;transform:scale(1.015)}
+        .upload-icon{width:110px;height:110px;background:url('images/icons8-upload-100.png') center/contain no-repeat;background-size:88%;margin:0 auto 20px}
+        .file-input-wrapper{position:relative;display:inline-block;width:100%;margin:18px 0}
+        #excelFile{position:absolute;inset:0;opacity:0;cursor:pointer}
+        .custom-upload-btn{display:inline-block;padding:11px 36px;background:linear-gradient(45deg,#00bcd4,#0097a7);color:#fff;border-radius:50px;font-weight:600;box-shadow:0 6px 20px rgba(0,188,212,0.45);transition:all .35s;cursor:pointer}
+        .custom-upload-btn:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 12px 30px rgba(0,188,212,0.6)}
+        .file-info{display:flex;align-items:center;justify-content:center;gap:16px;margin:22px 0 28px;flex-wrap:wrap}
+        .file-name{font-size:16px;color:#00e5ff;padding:10px 22px;background:rgba(0,188,212,0.25);border-radius:12px;max-width:480px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid rgba(0,188,212,0.5)}
+        .clear-btn-inline,.sql-btn{padding:10px 26px;border:none;border-radius:12px;font-weight:600;cursor:pointer;transition:all .3s}
+        .clear-btn-inline{background:linear-gradient(45deg,#e74c3c,#c0392b);color:#fff}
+        .sql-btn{background:linear-gradient(45deg,#27ae60,#1e8449);color:#fff;display:flex;align-items:center;gap:8px}
+        #output{margin-top:20px;border-radius:14px;overflow:hidden;background:rgba(20,25,35,0.9);box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+        table{width:100%;min-width:1400px;border-collapse:collapse;font-size:15px}
+        thead th{background:linear-gradient(45deg,#00bcd4,#0097a7);color:#000;padding:16px;text-align:center;font-weight:700;position:sticky;top:0;z-index:10;text-transform:uppercase}
+        tbody td{padding:14px 16px;border-bottom:1px solid rgba(0,188,212,0.15);color:#e0e0e0;white-space:nowrap}
+        tbody tr:hover td{background:rgba(0,188,212,0.22);color:#fff}
+        tbody tr:nth-child(even) td{background:rgba(35,41,53,0.6)}
 
-    .upload-area{
-        text-align:center;padding:40px 30px;background:rgba(0,188,212,0.12);
-        border:2px dashed #00bcd4;border-radius:18px;transition:all 0.4s ease;
-        margin-bottom:35px;
-    }
-    .upload-area:hover{background:rgba(0,188,212,0.2);border-color:#00e5ff;}
-    .upload-area.dragover{background:rgba(0,188,212,0.28);border-color:#00e5ff;transform:scale(1.015);}
+        /* LOADING SIÊU ĐẸP 2025 – NHỎ GỌN, THANH LỊCH, HIỆU ỨNG MƯỢT */
+        .overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(16px)}
+        .overlay.show{display:flex}
+        .loading-box{width:380px;background:rgba(25,32,48,0.98);border-radius:20px;padding:35px 40px;box-shadow:0 30px 80px rgba(0,0,0,0.9);border:1px solid rgba(0,188,212,0.4);text-align:center;position:relative;overflow:hidden}
+        .loading-box::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,188,212,0.15),transparent);animation:shine 3s infinite}
+        @keyframes shine{0%{left:-100%}100%{left:100%}}
+        .loading-title{font-size:22px;color:#00e5ff;margin-bottom:20px;font-weight:600;letter-spacing:1px}
+        .progress-circle{width:140px;height:140px;margin:0 auto 25px;position:relative}
+        .progress-circle svg{width:140px;height:140px;transform:rotate(-90deg)}
+        .progress-circle circle{background:transparent;stroke:rgba(0,188,212,0.2);fill:none;stroke-width:10}
+        .progress-circle .progress{stroke:#00e5ff;stroke-linecap:round;stroke-width:10;transition:stroke-dashoffset .8s ease}
+        .progress-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:32px;font-weight:bold;color:#4caf50}
+        .progress-info{font-size:16px;color:#ccc;margin:15px 0}
+        .progress-bar-small{height:6px;background:rgba(0,188,212,0.2);border-radius:3px;overflow:hidden;margin-top:20px}
+        .progress-fill-small{height:100%;width:0%;background:linear-gradient(90deg,#00bcd4,#00e5ff);border-radius:3px;transition:width .6s ease;box-shadow:0 0 15px rgba(0,229,255,0.6)}
 
-    .upload-icon{
-        width:110px;height:110px;
-        background:url('/images/icons8-upload-100.png') center/contain no-repeat;
-        background-size:88%;margin:0 auto 20px;
-        transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);
-        filter:drop-shadow(0 5px 15px rgba(0,188,212,0.5));
-    }
-    .upload-area:hover .upload-icon{transform:translateY(-12px) scale(1.15);}
-    .upload-area.dragover .upload-icon{transform:translateY(-20px) scale(1.3);}
-
-    .file-input-wrapper{position:relative;display:inline-block;width:100%;margin:18px 0;}
-    #excelFile{position:absolute;inset:0;opacity:0;cursor:pointer;}
-    
-    .custom-upload-btn{
-        display:inline-block;
-        padding:11px 36px;
-        background:linear-gradient(45deg,#00bcd4,#0097a7);
-        color:white;
-        border-radius:50px;
-        font-weight:600;
-        font-size:15px;
-        box-shadow:0 6px 20px rgba(0,188,212,0.45);
-        transition:all 0.35s ease;
-        cursor:pointer;
-    }
-    .custom-upload-btn:hover{
-        transform:translateY(-4px) scale(1.05);
-        box-shadow:0 12px 30px rgba(0,188,212,0.6);
-        background:linear-gradient(45deg,#00e5ff,#00bcd4);
-    }
-
-    /* Dòng tên file + 2 nút */
-    .file-info{
-        display:flex;align-items:center;justify-content:center;gap:16px;
-        margin:22px 0 28px;flex-wrap:wrap;
-    }
-    .file-name{
-        font-size:16px;color:#00e5ff;padding:10px 22px;
-        background:rgba(0,188,212,0.25);border-radius:12px;
-        max-width:480px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-        border:1px solid rgba(0,188,212,0.5);
-        box-shadow:0 4px 12px rgba(0,188,212,0.2);
-    }
-
-    .clear-btn-inline{
-        padding:10px 26px;background:linear-gradient(45deg,#e74c3c,#c0392b);
-        color:white;border:none;border-radius:12px;font-weight:600;font-size:15px;
-        cursor:pointer;transition:all 0.3s;box-shadow:0 5px 18px rgba(231,76,60,0.4);
-    }
-    .clear-btn-inline:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(231,76,60,0.6);}
-
-    /* Nút SQL Server - chỉ giao diện, chưa có chức năng */
-    .sql-btn{
-        padding:10px 28px;
-        background:linear-gradient(45deg,#27ae60,#1e8449);
-        color:white;
-        border:none;
-        border-radius:12px;
-        font-weight:600;
-        font-size:15px;
-        cursor:pointer;
-        transition:all 0.3s;
-        box-shadow:0 5px 18px rgba(39,174,96,0.45);
-        display:flex;align-items:center;gap:8px;
-    }
-    .sql-btn:hover{
-        transform:translateY(-3px);
-        box-shadow:0 12px 28px rgba(39,174,96,0.6);
-        background:linear-gradient(45deg,#2ecc71,#27ae60);
-    }
-
-    #output{
-        margin-top:20px;border-radius:14px;overflow:hidden;
-        box-shadow:0 12px 40px rgba(0,0,0,0.6);background:rgba(20,25,35,0.9);
-    }
-    table{width:100%;min-width:1400px;border-collapse:collapse;font-size:15px;}
-    thead th{
-        background:linear-gradient(45deg,#00bcd4,#0097a7);color:#000;padding:16px 14px;
-        text-align:center;font-weight:700;position:sticky;top:0;z-index:10;
-        text-transform:uppercase;letter-spacing:0.8px;font-size:14px;
-        box-shadow:0 4px 15px rgba(0,0,0,0.3);
-    }
-    tbody td{padding:14px 16px;border-bottom:1px solid rgba(0,188,212,0.15);color:#e0e0e0;white-space:nowrap;}
-    tbody tr:hover td{background:rgba(0,188,212,0.22);color:#fff;}
-    tbody tr:nth-child(even) td{background:rgba(35,41,53,0.6);}
-
-    .overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);
-        display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(14px);
-        opacity:0;transition:opacity 0.5s ease;}
-    .overlay.show{display:flex;opacity:1;}
-    .loader{width:90px;height:90px;border:7px solid rgba(0,188,212,0.3);border-top:7px solid #00bcd4;
-        border-radius:50%;animation:spin 1.1s cubic-bezier(0.4,0,0.2,1) infinite;}
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    .alert{position:fixed;top:25px;right:25px;padding:18px 30px;border-radius:16px;color:#fff;
-        box-shadow:0 10px 30px rgba(0,0,0,0.5);min-width:340px;display:flex;align-items:center;gap:14px;
-        transform:translateX(420px);transition:transform 0.6s cubic-bezier(0.18,0.89,0.32,1.28);z-index:1000;}
-    .alert.show{transform:translateX(0);}
-    .alert.success{background:linear-gradient(135deg,#4caf50,#43a047);}
-    .alert.error{background:linear-gradient(135deg,#f44336,#d32f2f);}
-    .alert::before{font-size:2em;font-weight:bold;}
-    .alert.success::before{content:'';}
-    .alert.error::before{content:'';}
-</style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        .alert{position:fixed;top:25px;right:25px;padding:18px 30px;border-radius:16px;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,0.5);min-width:340px;display:flex;align-items:center;gap:14px;transform:translateX(420px);transition:transform .6s cubic-bezier(0.18,0.89,0.32,1.28);z-index:1000}
+        .alert.show{transform:translateX(0)}
+        .alert.success{background:linear-gradient(135deg,#4caf50,#43a047)}
+        .alert.error{background:linear-gradient(135deg,#f44336,#d32f2f)}
+        .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:2000}
+        .modal.show{display:flex}
+        .modal-content{background:rgba(31,37,51,0.98);padding:35px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.9);width:90%;max-width:500px;border:1px solid rgba(0,188,212,0.3);backdrop-filter:blur(10px)}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;border-bottom:2px solid rgba(0,188,212,0.2);padding-bottom:15px}
+        .modal-header h3{color:#00bcd4;font-size:1.4em;margin:0}
+        .close-modal{color:#aaa;font-size:28px;cursor:pointer}
+        .close-modal:hover{color:#00bcd4}
+        .form-group{margin-bottom:18px}
+        .form-group label{display:block;color:#aaa;margin-bottom:8px;font-size:12px;font-weight:600;text-transform:uppercase}
+        .form-group input{width:100%;padding:11px;border:1px solid #2e3547;border-radius:8px;background:rgba(35,41,53,0.8);color:#fff;transition:all .3s}
+        .form-group input:focus{border-color:#00bcd4;box-shadow:0 0 12px rgba(0,188,212,0.6);outline:none}
+        .alert-modal{padding:12px;margin:15px 0;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:10px}
+        .alert-modal.success{background:rgba(76,175,80,0.15);border:1px solid rgba(76,175,80,0.5);color:#4caf50}
+        .alert-modal.error{background:rgba(244,67,54,0.15);border:1px solid rgba(244,67,54,0.5);color:#ef5350}
+        .alert-modal.loading{background:rgba(0,188,212,0.15);border:1px solid rgba(0,188,212,0.5);color:#00bcd4}
+        .modal-buttons{display:flex;gap:12px;margin-top:25px}
+        .btn-cancel,.btn-submit{flex:1;padding:12px;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all .3s}
+        .btn-cancel{background:#444c5c;color:#fff}
+        .btn-submit{background:linear-gradient(45deg,#00bcd4,#00acc1);color:#fff;box-shadow:0 4px 15px rgba(0,188,212,0.4)}
+        .btn-submit:hover{background:linear-gradient(45deg,#00acc1,#0097a7);box-shadow:0 6px 25px rgba(0,188,212,0.6)}
+        .confirm-icon{font-size:68px;color:#4caf50;margin-bottom:20px}
+    </style>
 </head>
 <body>
-
-<div class="overlay" id="loadingOverlay">
-    <div class="loader"></div>
-</div>
-
-<div class="container">
-    <span class="close-btn" onclick="goToCreateAdminPage()">X</span>
-    <h1>Quản Lý Dữ Liệu Bệnh Nhân</h1>
-
-    <div class="upload-area" id="uploadArea">
-        <div class="upload-icon" id="uploadIcon"></div>
-        <p style="color:#ccc;font-size:18px;margin:15px 0;">Kéo & thả file Excel vào đây hoặc</p>
-
-        <div class="file-input-wrapper">
-            <input type="file" id="excelFile" accept=".xlsx,.xls">
-            <div class="custom-upload-btn">Chọn File Excel</div>
-        </div>
-
-        <!-- Tên file + Xóa + SQL Server cùng dòng -->
-        <div class="file-info" id="fileInfo" style="display:none;">
-            <div class="file-name" id="fileName">Chưa chọn file</div>
-            <button class="clear-btn-inline" onclick="clearFile()">Xóa File</button>
-           <!-- Sửa nút SQL thành -->
-        <button class="sql-btn">
-           <i class="fas fa-database"></i> SQL Server
-        </button>
+    <!-- LOADING SIÊU ĐẸP – NHỎ GỌN, THANH LỊCH, HIỆU ỨNG CHẠY MƯỢT -->
+    <div class="overlay" id="loadingOverlay">
+        <div class="loading-box">
+            <div class="loading-title">Đang Đổ Dữ Liệu Bệnh Nhân</div>
+            <div class="progress-circle">
+                <svg>
+                    <circle cx="70" cy="70" r="60"></circle>
+                    <circle cx="70" cy="70" r="60" class="progress" stroke-dasharray="377" stroke-dashoffset="377" id="circleProgress"></circle>
+                </svg>
+                <div class="progress-text" id="progressPercent">0%</div>
+            </div>
+            <div class="progress-info" id="progressInfo">Đang chuẩn bị dữ liệu...</div>
+            <div class="progress-bar-small">
+                <div class="progress-fill-small" id="progressFillSmall"></div>
+            </div>
         </div>
     </div>
 
-    <div id="output"></div>
-</div>
+    <div class="container">
+        <span class="close-btn" onclick="location.href='Home.html'">×</span>
+        <h1>Đổ Dữ Liệu Bệnh Nhân Từ Excel</h1>
 
-<script>
-function goToCreateAdminPage() {
-    window.location.href = "Home.html";
-}
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon"></div>
+            <p style="color:#ccc;font-size:18px;margin:15px 0">Kéo & thả file Excel hoặc</p>
+            <div class="file-input-wrapper">
+                <input type="file" id="excelFile" accept=".xlsx,.xls">
+                <div class="custom-upload-btn">Chọn File Excel</div>
+            </div>
+            <div class="file-info" id="fileInfo" style="display:none">
+                <div class="file-name" id="fileName"></div>
+                <button class="clear-btn-inline" onclick="clearFile()">Xóa File</button>
+                <button class="sql-btn" onclick="openSQLModal()">SQL Server</button>
+            </div>
+        </div>
 
-// Icon
-window.addEventListener('load', () => {
-    const icon = document.getElementById('uploadIcon');
-    const img = new Image();
-    img.onload = () => icon.style.backgroundImage = "url('/images/icons8-upload-100.png')";
-    img.onerror = () => icon.style.backgroundImage = "url('https://img.icons8.com/clouds/100/upload-to-cloud.png')";
-    img.src = '/images/icons8-upload-100.png';
-});
+        <div id="output"></div>
+    </div>
 
-const uploadArea = document.getElementById('uploadArea');
-const fileInput = document.getElementById('excelFile');
-const fileNameDisplay = document.getElementById('fileName');
-const fileInfo = document.getElementById('fileInfo');
+    <!-- Modal kết nối SQL -->
+    <div id="sqlModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Kết Nối SQL Server</h3>
+                <span class="close-modal" onclick="closeSQLModal()">×</span>
+            </div>
+            <form id="sqlForm">
+                <div class="form-group"><label>Server Name *</label><input type="text" id="sqlServer" placeholder="localhost\\SQLEXPRESS" required></div>
+                <div class="form-group"><label>Database Name *</label><input type="text" id="sqlDatabase" placeholder="QLBenhNhan" required></div>
+                <div class="form-group"><label>Username</label><input type="text" id="sqlUsername"></div>
+                <div class="form-group"><label>Password</label><input type="password" id="sqlPassword"></div>
+                <div id="sqlAlert" class="alert-modal" style="display:none"></div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeSQLModal()">Hủy</button>
+                    <button type="submit" class="btn-submit">Kết Nối</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-function updateFileDisplay(){
-    if(fileInput.files[0]){
-        fileNameDisplay.textContent = fileInput.files[0].name;
-        fileInfo.style.display = 'flex';
-    } else {
-        fileInfo.style.display = 'none';
-    }
-}
+    <!-- Modal xác nhận import -->
+    <div id="confirmImportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color:#00e5ff">Xác Nhận Đổ Dữ Liệu</h3>
+                <span class="close-modal" onclick="closeConfirmModal()">×</span>
+            </div>
+            <div style="text-align:center;padding:20px 10px">
+                <i class="fas fa-check-circle confirm-icon"></i>
+                <h4 style="color:#00e5ff;margin:15px 0">Kết nối thành công!</h4>
+                <p style="color:#ccc;line-height:1.6">
+                    Server: <strong style="color:#00e5ff" id="confirmServer"></strong><br>
+                    Database: <strong style="color:#00e5ff" id="confirmDatabase"></strong><br><br>
+                    Sẵn sàng import <strong style="color:#4caf50" id="confirmRows">0</strong> bệnh nhân.
+                </p>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel" onclick="closeConfirmModal()">Hủy</button>
+                <button type="button" class="btn-submit" onclick="startImport()">Tiến Hành Import</button>
+            </div>
+        </div>
+    </div>
 
-function autoLoadExcel(){
-    const file = fileInput.files[0];
-    if(!file) return;
+    <script>
+        let excelData = null;
+        let sqlConnection = null;
 
-    showLoading(true);
+        const fileInput = document.getElementById('excelFile');
+        const fileName = document.getElementById('fileName');
+        const fileInfo = document.getElementById('fileInfo');
+        const output = document.getElementById('output');
 
-    const reader = new FileReader();
-    reader.onload = function(e){
-        try {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, {type:'array'});
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(sheet, {defval: ''});
+        fileInput.addEventListener('change', () => {
+            if (!fileInput.files[0]) return;
+            fileName.textContent = fileInput.files[0].name;
+            fileInfo.style.display = 'flex';
+            readExcel(fileInput.files[0]);
+        });
 
-            if(json.length === 0){
-                document.getElementById('output').innerHTML = '<p style="text-align:center;color:#888;padding:80px;font-size:19px;">Không có dữ liệu để hiển thị</p>';
-                showAlert('File Excel trống !', 'error');
-            }else{
-                let html = `<div style="overflow-x:auto;"><table><thead><tr>`;
-                Object.keys(json[0]).forEach(k => html += `<th>${k}</th>`);
-                html += `</tr></thead><tbody>`;
-                json.forEach(r => {
-                    html += `<tr>`;
-                    Object.values(r).forEach(v => html += `<td>${v}</td>`);
-                    html += `</tr>`;
-                });
-                html += `</tbody></table></div>`;
-                document.getElementById('output').innerHTML = html;
-                showAlert(`Đã tải thành công ${json.length} bệnh nhân !`);
-            }
-        } catch(err){
-            showAlert('File Excel không hợp lệ !', 'error');
-        } finally{
-            showLoading(false);
+        function readExcel(file) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('show');
+            document.getElementById('progressInfo').textContent = 'Đang đọc file Excel...';
+            document.getElementById('progressPercent').textContent = '0%';
+            document.getElementById('circleProgress').style.strokeDashoffset = '377';
+            document.getElementById('progressFillSmall').style.width = '0%';
+
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const workbook = XLSX.read(e.target.result, {type:'array'});
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    excelData = XLSX.utils.sheet_to_json(sheet, {defval:''});
+                    renderTable();
+                    showAlert(`Đã tải ${excelData.length} bệnh nhân từ Excel`);
+                } catch { showAlert('File Excel không hợp lệ!', 'error'); }
+                finally { overlay.classList.remove('show'); }
+            };
+            reader.readAsArrayBuffer(file);
         }
-    };
-    reader.readAsArrayBuffer(file);
-}
 
-fileInput.addEventListener('change', () => {
-    updateFileDisplay();
-    autoLoadExcel();
-});
+        function renderTable() {
+            if (!excelData || excelData.length === 0) {
+                output.innerHTML = '<p style="text-align:center;color:#888;padding:80px;font-size:19px">Không có dữ liệu</p>';
+                return;
+            }
+            let html = '<div style="overflow-x:auto"><table><thead><tr>';
+            Object.keys(excelData[0]).forEach(k => html += `<th>${k}</th>`);
+            html += '</tr></thead><tbody>';
+            excelData.forEach(r => {
+                html += '<tr>';
+                Object.values(r).forEach(v => html += `<td>${v}</td>`);
+                html += '</tr>';
+            });
+            html += '</tbody></table></div>';
+            output.innerHTML = html;
+        }
 
-['dragover','dragenter'].forEach(e => uploadArea.addEventListener(e, ev => {ev.preventDefault(); uploadArea.classList.add('dragover');}));
-['dragleave','dragend','drop'].forEach(e => uploadArea.addEventListener(e, ev => {ev.preventDefault(); uploadArea.classList.remove('dragover');}));
-uploadArea.addEventListener('drop', e => {
-    const files = e.dataTransfer.files;
-    if(files[0] && /\.(xlsx|xls)$/i.test(files[0].name)){
-        fileInput.files = files;
-        updateFileDisplay();
-        autoLoadExcel();
-    }
-});
+        const uploadArea = document.getElementById('uploadArea');
+        ['dragover','dragenter'].forEach(ev => uploadArea.addEventListener(ev, e=>{e.preventDefault();uploadArea.classList.add('dragover')}));
+        ['dragleave','dragend','drop'].forEach(ev => uploadArea.addEventListener(ev, e=>{e.preventDefault();uploadArea.classList.remove('dragover')}));
+        uploadArea.addEventListener('drop', e => {
+            const file = e.dataTransfer.files[0];
+            if (file && /\.(xlsx?|xls?)$/i.test(file.name)) {
+                fileInput.files = e.dataTransfer.files;
+                fileName.textContent = file.name;
+                fileInfo.style.display = 'flex';
+                readExcel(file);
+            }
+        });
 
-function clearFile(){
-    fileInput.value = '';
-    updateFileDisplay();
-    document.getElementById('output').innerHTML = '';
-    showAlert('Đã xóa file và dữ liệu', 'error');
-}
+        function clearFile() {
+            fileInput.value = ''; excelData = null;
+            fileInfo.style.display = 'none';
+            output.innerHTML = '';
+            showAlert('Đã xóa file', 'error');
+        }
 
-function showLoading(show){
-    document.getElementById('loadingOverlay').classList.toggle('show', show);
-}
+        function showAlert(msg, type='success') {
+            const el = document.createElement('div');
+            el.className = `alert ${type}`;
+            el.innerHTML = `<span>${msg}</span>`;
+            document.body.appendChild(el);
+            setTimeout(() => el.classList.add('show'), 50);
+            setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 600); }, 4000);
+        }
 
-function showAlert(message, type='success'){
-    const alert = document.createElement('div');
-    alert.className = `alert ${type}`;
-    alert.innerHTML = `<span>${message}</span>`;
-    document.body.appendChild(alert);
-    setTimeout(() => alert.classList.add('show'), 50);
-    setTimeout(() => { alert.classList.remove('show'); setTimeout(() => alert.remove(), 600); }, 4000);
-}
-</script>
+        function openSQLModal() { document.getElementById('sqlModal').classList.add('show'); }
+        function closeSQLModal() { document.getElementById('sqlModal').classList.remove('show'); }
+
+        function showSQLAlert(msg, type = 'loading') {
+            const alert = document.getElementById('sqlAlert');
+            alert.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':type==='error'?'fa-times-circle':'fa-spinner fa-spin'}"></i><span>${msg}</span>`;
+            alert.className = `alert-modal ${type}`;
+            alert.style.display = 'flex';
+        }
+
+        document.getElementById('sqlForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const server = document.getElementById('sqlServer').value.trim();
+            const db = document.getElementById('sqlDatabase').value.trim();
+            const user = document.getElementById('sqlUsername').value.trim();
+            const pass = document.getElementById('sqlPassword').value;
+            const btn = e.target.querySelector('.btn-submit');
+            if (!server || !db) return showSQLAlert('Nhập Server và Database', 'error');
+
+            showSQLAlert('Đang kết nối...', 'loading');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/test-connection', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({
+                        serverName: server,
+                        databaseName: db,
+                        username: user || null,
+                        password: pass || null,
+                        useWindowAuth: !user && !pass
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    sqlConnection = {server, db, user: user||null, pass: pass||null, winAuth: !user && !pass};
+                    closeSQLModal();
+                    setTimeout(openConfirmModal, 300);
+                } else showSQLAlert('Kết nối thất bại: ' + data.message, 'error');
+            } catch { showSQLAlert('Lỗi kết nối server!', 'error'); }
+            finally { btn.disabled = false; }
+        });
+
+        function openConfirmModal() {
+            document.getElementById('confirmServer').textContent = sqlConnection.server;
+            document.getElementById('confirmDatabase').textContent = sqlConnection.db;
+            document.getElementById('confirmRows').textContent = excelData ? excelData.length : 0;
+            document.getElementById('confirmImportModal').classList.add('show');
+        }
+        function closeConfirmModal() { document.getElementById('confirmImportModal').classList.remove('show'); }
+
+        // HÀM IMPORT VỚI LOADING SIÊU ĐẸP
+        async function startImport() {
+            if (!excelData || excelData.length === 0) return showAlert('Không có dữ liệu Excel!', 'error');
+            if (!sqlConnection) return showAlert('Chưa kết nối SQL Server!', 'error');
+
+            closeConfirmModal();
+
+            const overlay = document.getElementById('loadingOverlay');
+            const percentEl = document.getElementById('progressPercent');
+            const circleEl = document.getElementById('circleProgress');
+            const fillSmall = document.getElementById('progressFillSmall');
+            const infoEl = document.getElementById('progressInfo');
+
+            overlay.classList.add('show');
+            percentEl.textContent = '0%';
+            circleEl.style.strokeDashoffset = '377';
+            fillSmall.style.width = '0%';
+            infoEl.textContent = 'Đang chuẩn bị dữ liệu...';
+
+            const total = excelData.length;
+
+            const updateProgress = (current) => {
+                const percent = Math.min(Math.round((current / total) * 100), 100);
+                percentEl.textContent = `${percent}%`;
+                const offset = 377 - (377 * percent / 100);
+                circleEl.style.strokeDashoffset = offset;
+                fillSmall.style.width = `${percent}%`;
+                infoEl.textContent = `Đang xử lý ${current}/${total} bệnh nhân...`;
+            };
+
+            const patients = excelData.map(row => ({
+                idbenhnhan: String(row["Mã BN"] || row["ID"] || row["MaBN"] || "").trim(),
+                tenbenhnhan: String(row["Tên Bệnh Nhân"] || row["TenBenhNhan"] || row["Tên"] || "").trim(),
+                gioitinh: String(row["Giới Tính"] || row["GioiTinh"] || "").trim(),
+                namsinh: String(row["Năm sinh"] || row["NamSinh"] || "").trim(),
+                dienthoai: String(row["Điện thoại"] || row["DienThoai"] || "").trim(),
+                diachi: String(row["Địa chỉ"] || row["DiaChi"] || "").trim(),
+                ngayden: String(row["Ngày nhập"] || row["NgayDen"] || "").trim()
+            }));
+
+            try {
+                const res = await fetch('/api/import-patients', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ connection: sqlConnection, patients })
+                });
+
+                const result = await res.json();
+
+                updateProgress(total);
+                setTimeout(() => {
+                    overlay.classList.remove('show');
+                    if (result.success) {
+                        showAlert(`Import thành công! Thành công: ${result.data.success}, Lỗi: ${result.data.failed || 0}`);
+                        if (result.data.failed > 0) {
+                            alert(`Có ${result.data.failed} lỗi:\n\n${(result.data.errors || []).slice(0,20).join('\n')}`);
+                        }
+                    } else {
+                        showAlert('Import thất bại!', 'error');
+                        alert(`Lỗi từ server:\n${result.message || 'Không xác định'}`);
+                    }
+                }, 1000);
+
+            } catch (err) {
+                updateProgress(total);
+                setTimeout(() => {
+                    overlay.classList.remove('show');
+                    showAlert('Lỗi kết nối!', 'error');
+                    alert(`Không thể import!\n\nChi tiết: ${err.message}`);
+                }, 1000);
+            }
+        }
+
+        window.addEventListener('click', e => {
+            if (e.target.classList.contains('modal')) e.target.classList.remove('show');
+        });
+    </script>
 </body>
 </html>
