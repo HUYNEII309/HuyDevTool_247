@@ -69,6 +69,79 @@
                     <button class="btn btn-primary btn-download" onclick="goToDodlBN()">Đổ dữ liệu</button>
                 </div>
             </div>
+
+             <!-- Xem lại danh sách User  -->
+            <div class="function-card">
+                <div class="card-header">
+                   <img src="images/icons8-password-window-60.png" alt="Icon" class="card-icon">
+                    <h3>Quên mật khẩu </h3>
+                </div>
+                <p class="card-description">Xem lại mật khẩu đã đặt cho tài khoản.</p>
+                <div class="card-actions">
+                    <a href="#" class="link-guide" onclick="openUserListGuideModal(); return false;">Hướng dẫn</a>
+                    <button class="btn btn-primary btn-download"  onclick="goToShowPass()">Show Pass</button>
+                </div>
+            </div>
+
+            <!-- Modal hướng dẫn Xem lại danh sách User -->
+<div id="userListGuideModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
+        <div class="modal-header" style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
+            <img src="images/icons8-password-window-60.png" alt="Icon" class="modal-icon" style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
+            <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;">Hướng dẫn xem lại danh sách User</h2>
+        </div>
+
+        <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
+
+            <div style="margin: 20px 0;">
+                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
+                <p style="margin: 0; line-height: 1.6;">Công cụ này giúp bạn xem lại toàn bộ danh sách tài khoản người dùng trong hệ thống, bao gồm tên đăng nhập, mật khẩu đã đặt, và quyền hạn. Đặc biệt hữu ích khi cần tra cứu mật khẩu đã quên hoặc kiểm tra thông tin tài khoản.</p>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Thông tin hiển thị</h3>
+                <p style="margin: 0 0 8px; line-height: 1.6;">
+                    • <strong>Tên đăng nhập:</strong> Username của từng tài khoản<br>
+                    • <strong>Mật khẩu:</strong> Password đã được thiết lập<br>
+                    • <strong>Họ tên:</strong> Tên đầy đủ của người dùng<br>
+                </p>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🔒 Bảo mật & Lưu ý</h3>
+                <p style="margin: 0; line-height: 1.6;">
+                    • <strong>Chỉ dành cho quản trị viên:</strong> Yêu cầu quyền Admin để sử dụng<br>
+                    • <strong>Bảo mật thông tin:</strong> Không chia sẻ mật khẩu cho người khác<br>
+                    • <strong>Đổi mật khẩu định kỳ:</strong> Nên thay đổi mật khẩu 3-6 tháng/lần<br>
+                    • <strong>Xóa tài khoản cũ:</strong> Vô hiệu hóa tài khoản không còn sử dụng<br>
+                    • <strong>Không screenshot:</strong> Tránh lưu hình ảnh có chứa mật khẩu
+                </p>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Cảnh báo quan trọng</h3>
+                <p style="margin: 0; line-height: 1.6;">
+                    • Công cụ này hiển thị mật khẩu dạng <strong>văn bản gốc</strong><br>
+                    • <strong>Đóng cửa sổ</strong> ngay sau khi tra xong thông tin<br>
+                    • Không để người khác nhìn thấy màn hình khi đang xem<br>
+                    • Sử dụng trong <strong>môi trường an toàn</strong>, không có camera<br>
+                    • Nếu bị lộ mật khẩu, cần <strong>đổi ngay lập tức</strong>
+                </p>
+            </div>
+
+            <div style="margin: 20px 0; padding: 12px; background: rgba(255,193,7,0.15); border-left: 3px solid #ffc107; border-radius: 6px;">
+                <p style="margin: 0; font-size: 13px; line-height: 1.6;">
+                    ⚡ <strong>Lưu ý pháp lý:</strong> Việc truy cập và xem mật khẩu người dùng phải tuân thủ quy định bảo mật của bệnh viện/phòng khám. Chỉ sử dụng khi có sự đồng ý hoặc theo yêu cầu công việc hợp pháp.
+                </p>
+            </div>
+        </div>
+
+        <div class="modal-footer" style="padding: 15px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: flex-end; gap: 15px;">
+            <button class="btn btn-secondary close-modal" onclick="closeUserListGuideModal()">Đóng</button>
+        </div>
+    </div>
+</div>
+
         </div>
     </main>
 
@@ -275,28 +348,62 @@
 </div>
 
 
-    <script>
-        // mở form hướng dẫn đổ danh sách bệnh nhân 
-        function openDodlGuideModal() {
+   <script>
+    // === Modal Định dạng ngày giờ ===
+    function openGuideModal() {
+        document.getElementById('guideModal').style.display = 'flex';
+    }
+    
+    function closeModal() {
+        document.getElementById('guideModal').style.display = 'none';
+    }
+
+    // === Modal Tạo lại Admin ===
+    function openAdminGuideModal() {
+        document.getElementById('adminGuideModal').style.display = 'flex';
+    }
+    
+    function closeAdminGuideModal() {
+        document.getElementById('adminGuideModal').style.display = 'none';
+    }
+
+    // === Modal Đổ danh sách bệnh nhân ===
+    function openDodlGuideModal() {
         document.getElementById('dodlGuideModal').style.display = 'flex';
     }
+    
     function closeDodlGuideModal() {
         document.getElementById('dodlGuideModal').style.display = 'none';
     }
-    // Đóng khi click bên ngoài
+
+    // === Modal Xem lại danh sách User ===
+    function openUserListGuideModal() {
+        document.getElementById('userListGuideModal').style.display = 'flex';
+    }
+    
+    function closeUserListGuideModal() {
+        document.getElementById('userListGuideModal').style.display = 'none';
+    }
+    
+    // Đóng khi click bên ngoài modal
     window.addEventListener('click', function(e) {
-        const modal = document.getElementById('dodlGuideModal');
-        if (e.target === modal) modal.style.display = 'none';
+        if (e.target.classList.contains('modal-overlay')) {
+            e.target.style.display = 'none';
+        }
     });
-        // Chuyển sang trang tạo Admin
-        function goToCreateAdminPage() {
-            window.location.href = "SQL_Server_Connection.html";
-        }
-         // Chuyển sang trang đổ dữ liệu bệnh nhân
-        function goToDodlBN() {
-            window.location.href = "DoDL_BenhNhan.html";
-        }
-    </script>
+
+    // Chuyển trang
+    function goToCreateAdminPage() {
+        window.location.href = "SQL_Server_Connection.html";
+    }
+    
+    function goToDodlBN() {
+        window.location.href = "DoDL_BenhNhan.html";
+    }
+    function goToShowPass() {
+        window.location.href = "Show_Pass.html";
+    }
+</script>
     <script src="dashboard.js"></script>
 </body>
 </html>

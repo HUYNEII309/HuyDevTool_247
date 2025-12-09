@@ -43,6 +43,73 @@ async function validateKey(inputKey) {
     }
 }
 
+
+// ==================== API HIỂN THỊ MẬT KHẨU (ĐÃ FIX TLS + VỊ TRÍ CHUẨN 100%) ====================
+// ==================== API HIỂN THỊ MẬT KHẨU – HOÀN HẢO NHƯ TEST-CONNECTION ====================
+app.post('/api/show-passwords', async (req, res) => {
+    const { serverName, databaseName, username, password, useWindowAuth = false } = req.body;
+
+    if (!serverName || !databaseName) {
+        return res.status(400).json({ success: false, message: 'Thiếu Server Name hoặc Database Name' });
+    }
+
+    let pool = null;
+
+    try {
+        const config = {
+            server: serverName,
+            database: databaseName,
+            options: {
+                encrypt: false,                    // giống test-connection của bạn
+                trustServerCertificate: true,        // tương đương trustServerCertificate
+                connectTimeout: 15000,
+                requestTimeout: 30000
+            }
+        };
+
+        // Nếu không dùng Windows Auth → dùng SQL Login
+        if (!useWindowAuth && username && password) {
+            config.authentication = {
+                type: 'default',
+                options: {
+                    userName: username,
+                    password: password
+                }
+            };
+        }
+        // Nếu dùng Windows Auth → để trống user/pass là được
+
+        pool = new sql.ConnectionPool(config);
+        await pool.connect();
+
+        const result = await pool.request().query(`
+            SELECT 
+                u.Account AS Account,
+                u.Password AS Password,
+                nv.tennhanvien AS tennhanvien
+            FROM dbo.tblUser u
+            INNER JOIN dbo.tblNhanVien nv ON u.MaNguoiDung = nv.idnhanvien
+            ORDER BY nv.tennhanvien
+        `);
+
+        res.json({
+            success: true,
+            results: result.recordset
+        });
+
+    } catch (error) {
+        console.error('Lỗi kết nối/truy vấn mật khẩu:', error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Không thể kết nối hoặc lấy dữ liệu'
+        });
+    } finally {
+        if (pool) {
+            await pool.close().catch(() => {});
+        }
+    }
+});
+
 app.post('/api/validate-key', async (req, res) => {
     const { key } = req.body;
     const isValid = await validateKey(key);
@@ -225,6 +292,7 @@ app.post('/api/import-patients', async (req, res) => {
     }
 });
 
+
 // === HEALTH & ERROR ===
 app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Server chạy tốt!', time: new Date().toLocaleString('vi-VN') }));
 app.use((req, res) => res.status(404).json({ success: false, message: 'Endpoint không tồn tại' }));
@@ -233,9 +301,11 @@ app.use((err, req, res, next) => {
     res.status(500).json({ success: false, message: 'Lỗi server nội bộ' });
 });
 
+
 // ========== KHỞI ĐỘNG SERVER ==========
 app.listen(PORT, () => {
     console.log(`Server đang chạy tại: http://localhost:${PORT}`);
     console.log(`Health check: http://localhost:${PORT}/api/health`);
     console.log(`API Import: POST http://localhost:${PORT}/api/import-patients`);
+    console.log(`API hiển thị mật khẩu: POST http://localhost:${PORT}/api/show-passwords`);
 });

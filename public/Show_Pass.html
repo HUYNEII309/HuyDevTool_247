@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiển Thị Mật Khẩu</title>
+    <link rel="icon" href="images/apache_orc_logo_icon_167862.png" type="image/x-icon">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #121827 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('images/234.png');
+            background-size: cover; background-position: center; opacity: 1; z-index: -2;
+        }
+        body::after {
+            content: ''; position: fixed; top: -50%; right: -50%; width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(0,188,212,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(0,188,212,0.08) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite; z-index: -1;
+        }
+        @keyframes float { 0%,100% { transform: translate(0,0); } 50% { transform: translate(30px,-30px); } }
+        .container {
+            max-width: 500px; width: 90%;
+            background: rgba(31,37,51,0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(0,188,212,0.2);
+            padding: 40px 30px; text-align: center;
+            border: 1px solid rgba(0,188,212,0.2);
+            backdrop-filter: blur(10px);
+        }
+        h2 {
+            display: flex; justify-content: center; align-items: center; gap: 12px;
+            color: #00bcd4; font-size: 1.8em; margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,188,212,0.3);
+        }
+        h2 img { width: 50px; height: 50px; }
+        p.description { color: #aaa; margin-bottom: 30px; font-size: 14px; }
+        .input-group {
+            position: relative; margin-bottom: 20px;
+        }
+        .input-group img {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            width: 20px; height: 20px; opacity: 0.6;
+        }
+        input {
+            width: 100%; padding: 12px 14px 12px 40px;
+            border: 1px solid #2e3547; border-radius: 10px;
+            background-color: rgba(35,41,53,0.8); color: #fff; font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: #00bcd4; box-shadow: 0 0 12px rgba(0,188,212,0.6);
+            outline: none; background-color: rgba(35,41,53,0.95);
+        }
+        .note {
+            background: rgba(0,188,212,0.1); border-left: 4px solid #00bcd4;
+            padding: 12px; margin-bottom: 25px; border-radius: 8px;
+            font-size: 13px; text-align: left; color: #ddd;
+        }
+        .buttons { display: flex; justify-content: space-between; gap: 12px; }
+        button {
+            flex: 1; padding: 14px; border: none; border-radius: 10px;
+            font-weight: 600; cursor: pointer; font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .btn-back {
+            background-color: #444c5c; color: white; border: 1px solid #555d6e;
+        }
+        .btn-back:hover { background-color: #555c6e; transform: translateY(-2px); }
+        .btn-show {
+            background: linear-gradient(45deg, #00bcd4, #00acc1); color: white;
+            box-shadow: 0 4px 15px rgba(0,188,212,0.4);
+        }
+        .btn-show:hover { background: linear-gradient(45deg, #00acc1, #0097a7); transform: translateY(-3px); }
+        .btn-show:disabled { opacity: 0.6; cursor: not-allowed; }
+        .alert {
+            padding: 16px; margin-bottom: 20px; border-radius: 12px; font-size: 14px;
+            display: none; animation: slideDown 0.3s ease-out; border: 1px solid;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .alert.success {
+            background: rgba(76,175,80,0.15); border-color: rgba(76,175,80,0.5); color: #4caf50;
+        }
+        .alert.error {
+            background: rgba(244,67,54,0.15); border-color: rgba(244,67,54,0.5); color: #ef5350;
+        }
+        .alert.loading {
+            background: rgba(0,188,212,0.15); border-color: rgba(0,188,212,0.5); color: #00bcd4;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .modal {
+            position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: rgba(31,37,51,0.98); padding: 30px; border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9); max-width: 600px; width: 90%;
+            border: 1px solid rgba(0,188,212,0.3); backdrop-filter: blur(10px); max-height: 80vh; overflow-y: auto;
+        }
+        .modal-content::-webkit-scrollbar { width: 8px; }
+        .modal-content::-webkit-scrollbar-track { background: rgba(0,188,212,0.1); border-radius: 10px; }
+        .modal-content::-webkit-scrollbar-thumb { background: rgba(0,188,212,0.5); border-radius: 10px; }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; border-bottom: 1px solid rgba(0,188,212,0.2);
+        }
+        .modal-header h3 { color: #00bcd4; font-size: 1.4em; }
+        .close-btn { color: #aaa; font-size: 28px; cursor: pointer; }
+        .close-btn:hover { color: #00bcd4; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(0,188,212,0.2); color: #fff; }
+        th { background: rgba(0,188,212,0.2); }
+        @media (max-width: 500px) {
+            .container { padding: 30px 20px; }
+            h2 { font-size: 1.5em; }
+            h2 img { width: 40px; height: 40px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>
+            <img src="images/icons8-password-window-60.png" alt="Pass Icon">
+            Hiển Thị Mật Khẩu
+        </h2>
+        <p class="description">Nhập thông tin kết nối để xem mật khẩu đã lưu trong CSDL.</p>
+        <div id="alertMessage" class="alert"></div>
+        <form id="showPassForm">
+            <div class="input-group">
+                <img src="images/icons8-sql-64.png" alt="Server">
+                <input type="text" id="serverName" placeholder="Server Name (ví dụ: localhost\\SQLEXPRESS)" required>
+            </div>
+            <div class="input-group">
+                <img src="images/icons8-sql-64.png" alt="DB">
+                <input type="text" id="databaseName" placeholder="Database Name" required>
+            </div>
+            <div class="input-group">
+                <img src="images/icons8-id-verified-64.png" alt="User">
+                <input type="text" id="username" placeholder="Username (SQL)">
+            </div>
+            <div class="input-group">
+                <img src="images/icons8-password-key-64.png" alt="Pass">
+                <input type="password" id="password" placeholder="Password">
+            </div>
+            <div class="note">
+                Chỉ áp dụng cho khách hàng dùng SQL SERVER.
+            </div>
+            <div class="buttons">
+                <button type="button" class="btn-back" onclick="window.location.href='Home.html'">Quay lại</button>
+                <button type="submit" class="btn-show">Hiển Thị Mật Khẩu</button>
+            </div>
+        </form>
+    </div>
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Kết Quả</h3>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="resultTable"></div>
+        </div>
+    </div>
+    <script>
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert ${type}`;
+            alertDiv.style.display = 'block';
+        }
+        function hideAlert() {
+            document.getElementById('alertMessage').style.display = 'none';
+        }
+        function openModal() {
+            document.getElementById('resultModal').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('resultModal').style.display = 'none';
+            document.getElementById('resultTable').innerHTML = '';
+        }
+        document.getElementById('showPassForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const serverName = document.getElementById('serverName').value;
+            const databaseName = document.getElementById('databaseName').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const showBtn = document.querySelector('.btn-show');
+            if (!serverName || !databaseName) {
+                showAlert('Vui lòng nhập Server Name và Database Name', 'error');
+                return;
+            }
+            try {
+                showAlert('Đang kết nối...', 'loading');
+                showBtn.disabled = true;
+                const response = await fetch('/api/show-passwords', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        serverName,
+                        databaseName,
+                        username: username || null,
+                        password: password || null,
+                        useWindowAuth: !username && !password,
+                        query: `
+                            SELECT dbo.tblUser.*, dbo.tblNhanVien.tennhanvien
+                            FROM dbo.tblUser INNER JOIN
+                            dbo.tblNhanVien ON dbo.tblUser.MaNguoiDung = dbo.tblNhanVien.idnhanvien
+                        `
+                    })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showAlert('Kết nối thành công!', 'success');
+                    displayResults(data.results);
+                    openModal();
+                } else {
+                    showAlert(data.message || 'Lỗi kết nối. Vui lòng kiểm tra thông tin.', 'error');
+                }
+            } catch (error) {
+                showAlert(error.message || 'Có lỗi xảy ra. Vui lòng thử lại.', 'error');
+            } finally {
+                showBtn.disabled = false;
+                setTimeout(hideAlert, 3000);
+            }
+        });
+        function displayResults(results) {
+            const tableContainer = document.getElementById('resultTable');
+            if (results.length === 0) {
+                tableContainer.innerHTML = '<p>Không có dữ liệu.</p>';
+                return;
+            }
+            let table = '<table><tr><th>Tên Nhân Viên</th><th>Tên Đăng Nhập</th><th>Mật Khẩu</th></tr>';
+            results.forEach(row => {
+                table += `<tr>
+                    <td>${row.tennhanvien || ''}</td>
+                    <td>${row.Account || ''}</td>
+                    <td>${row.Password || ''}</td>
+                </tr>`;
+            });
+            table += '</table>';
+            tableContainer.innerHTML = table;
+        }
+        window.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('resultModal')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

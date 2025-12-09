@@ -297,7 +297,7 @@
         }
         function closeConfirmModal() { document.getElementById('confirmImportModal').classList.remove('show'); }
 
-        // HÀM IMPORT VỚI LOADING SIÊU ĐẸP
+        // HÀM IMPORT VỚI LOADING SIÊU ĐẸP - CẬP NHẬT THÔNG BÁO ĐÃ ĐỔ XONG BAO NHIÊU/TỔNG
         async function startImport() {
             if (!excelData || excelData.length === 0) return showAlert('Không có dữ liệu Excel!', 'error');
             if (!sqlConnection) return showAlert('Chưa kết nối SQL Server!', 'error');
@@ -324,7 +324,7 @@
                 const offset = 377 - (377 * percent / 100);
                 circleEl.style.strokeDashoffset = offset;
                 fillSmall.style.width = `${percent}%`;
-                infoEl.textContent = `Đang xử lý ${current}/${total} bệnh nhân...`;
+                infoEl.textContent = `Đã đổ xong ${current}/${total} bệnh nhân`;
             };
 
             const patients = excelData.map(row => ({
