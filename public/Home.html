@@ -70,6 +70,20 @@
                 </div>
             </div>
 
+            <!-- Đổ danh sách thủ thuật   -->
+            <div class="function-card">
+                <div class="card-header">
+                   <img src="images/icons8-to-do-list-60.png" alt="Icon" class="card-icon">
+                    <h3>Đổ DS thủ thuật</h3>
+                </div>
+                <p class="card-description">Đổ danh sách thủ thuật vào DataBase.</p>
+                <div class="card-actions">
+                    <a href="#" class="link-guide" onclick="openDoThuThuatGuideModal(); return false;">Hướng dẫn</a>
+                   <button class="btn btn-primary btn-download" onclick="goToDoThuThuat()">Đổ dữ liệu</button>
+                </div>
+            </div>
+
+            
              <!-- Xem lại danh sách User  -->
             <div class="function-card">
                 <div class="card-header">
@@ -347,8 +361,91 @@
     </div>
 </div>
 
+<!-- Modal hướng dẫn Đổ danh sách thủ thuật -->
+<div id="dothuthuatGuideModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
+        <div class="modal-header" style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
+            <img src="images/icons8-to-do-list-60.png" alt="Icon" class="modal-icon" style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
+            <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;">Hướng dẫn đổ danh sách thủ thuật</h2>
+        </div>
+
+        <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
+
+            <div style="margin: 20px 0;">
+                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
+                <p style="margin: 0; line-height: 1.6;">Nhập toàn bộ danh sách thủ thuật từ file Excel vào cơ sở dữ liệu SQL Server của phần mềm NKS.</p>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚙️ Yêu cầu trước khi thực hiện</h3>
+                <p style="margin: 0 0 8px; line-height: 1.6;">
+                    • File Excel mẫu: <strong>DS_ThuThuat.xlsx</strong> (đã được cung cấp)<br>
+                    • SQL Server đang chạy và cho phép kết nối<br>
+                    • Tài khoản SQL có quyền <strong>db_owner</strong> trên database NKS<br>
+                    • Máy tính đã cài .NET Framework 4.7.2 trở lên <br>
+                    • Sau khi đổ dữ liệu xong sẽ có <strong> Nhóm Thủ Thuật Đổ Dữ Liệu </strong>
+                </p>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Các bước thực hiện</h3>
+                <p style="margin: 0; line-height: 1.6;">
+                    <strong>1.</strong> Nhấn nút <strong>“Đổ dữ liệu”</strong> → chuyển sang trang kết nối<br>
+                    <strong>2.</strong> Nhập thông tin Server, Database, User, Password<br>
+                    <strong>3.</strong> Chọn file Excel <code>DS_ThuThuat.xlsx</code><br>
+                    <strong>4. <strong> Dữ liệu không có vui lòng đánh # để web tự tính dữ liệu phù hợp<br>
+                    <strong>5.</strong> Nhấn <strong>“Bắt đầu đổ dữ liệu”</strong><br>
+                    <strong>6.</strong> Đợi thông báo <strong>“Hoàn tất”</strong>
+                </p>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Lưu ý quan trọng</h3>
+                <p style="margin: 0; line-height: 1.6;">
+                    • Không thay đổi tên cột hoặc cấu trúc file mẫu<br>
+                    • Sao lưu database trước khi thực hiện<br>
+                    • Chỉ đổ dữ liệu 1 lần cho mỗi đợt cập nhật<br>
+                    • Nếu đã có dữ liệu cũ, nên xóa bảng thủ thuật trước khi đổ mới
+                </p>
+            </div>
+
+            <div style="margin: 20px 0; padding: 12px; background: rgba(0,194,168,0.1); border-left: 3px solid #00c2a8; border-radius: 6px;">
+                <p style="margin: 0; font-size: 13px; line-height: 1.6;">
+                    💡 <strong>Mẹo:</strong> Nếu lỗi kết nối, kiểm tra SQL Server Configuration Manager → bật TCP/IP và Named Pipes.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="modal-footer" style="padding: 25px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: space-between; align-items: center;">
+            <a href="files/DS_ThuThuat.xlsx" download="DS_ThuThuat.xlsx" target="_blank" class="btn btn-primary"
+               style="background: linear-gradient(135deg, #2d3748, #1a202c); color: #e2e8f0; padding: 11px 24px; font-size: 15px; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.6); border: 1px solid #4a5568; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.4); text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease;"
+               onmouseover="this.style.background='linear-gradient(135deg, #4a5568, #2d3748)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.6)'"
+               onmouseout="this.style.background='linear-gradient(135deg, #2d3748, #1a202c)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.4)'">
+                <span style="font-size: 22px;">↓</span> Tải mẫu Excel
+            </a>
+            <button class="btn btn-secondary close-modal" onclick="closeDoThuThuatGuideModal()"
+                    style="padding: 14px 32px; border-radius: 10px; background: #2d3748; color: #e2e8f0; border: 1px solid #4a5568;">
+                Đóng
+            </button>
+        </div>
+    </div>
+</div>
 
    <script>
+
+    function goToDoThuThuat() {
+    window.location.href = "DoDL_ThuThuat.html"; // hoặc trang tương ứng
+}
+    // Modal Đổ danh sách thủ thuật
+    function openDoThuThuatGuideModal() {
+        document.getElementById('dothuthuatGuideModal').style.display = 'flex';
+    }
+    
+    function closeDoThuThuatGuideModal() {
+        document.getElementById('dothuthuatGuideModal').style.display = 'none';
+    }
+
     // === Modal Định dạng ngày giờ ===
     function openGuideModal() {
         document.getElementById('guideModal').style.display = 'flex';

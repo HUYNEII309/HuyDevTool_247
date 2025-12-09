@@ -292,6 +292,186 @@ app.post('/api/import-patients', async (req, res) => {
     }
 });
 
+// === Tạo nhóm thủ thuật (chỉ 2 trường, đúng yêu cầu) ===
+app.post('/api/create-thuthuat-group', async (req, res) => {
+    const { connection, idnhomthuthuat, nhomthuthuat } = req.body;
+
+    // Kiểm tra dữ liệu đầu vào
+    if (!connection || !idnhomthuthuat || !nhomthuthuat) {
+        return res.status(400).json({ success: false, message: 'Thiếu connection hoặc id/nhóm' });
+    }
+
+    if (idnhomthuthuat.length !== 12 || !/^\d+$/.test(idnhomthuthuat)) {
+        return res.status(400).json({ success: false, message: 'idnhomthuthuat phải đúng 12 chữ số' });
+    }
+
+    let pool;
+    try {
+        const config = {
+            server: connection.server,
+            database: connection.db,
+            options: { 
+                encrypt: false, 
+                trustServerCertificate: true,
+                connectTimeout: 15000,
+                requestTimeout: 30000
+            }
+        };
+
+        if (!connection.winAuth && connection.user && connection.pass) {
+            config.authentication = {
+                type: 'default',
+                options: { userName: connection.user, password: connection.pass }
+            };
+        }
+
+        pool = new sql.ConnectionPool(config);
+        await pool.connect();
+
+        await pool.request()
+            .input('idnhomthuthuat', sql.VarChar(12), idnhomthuthuat)
+            .input('nhomthuthuat', sql.NVarChar(200), nhomthuthuat)
+            .query(`
+                INSERT INTO tblNhomthuthuat (idnhomthuthuat, nhomthuthuat)
+                VALUES (@idnhomthuthuat, @nhomthuthuat)
+            `);
+
+        console.log(`Tạo nhóm thành công: ${idnhomthuthuat} - "${nhomthuthuat}"`);
+        res.json({ success: true, message: 'Tạo nhóm thành công' });
+
+    } catch (error) {
+        console.error('Lỗi tạo nhóm thủ thuật:', error.message);
+        
+        // Nếu lỗi do trùng khóa chính (idnhomthuthuat đã tồn tại) → vẫn coi là "thành công" (vì nhóm đã có)
+        if (error.message.includes('Violation of PRIMARY KEY') || 
+            error.message.includes('duplicate key') || 
+            error.number === 2627 || error.number === 2601) {
+            console.log(`Nhóm đã tồn tại: ${idnhomthuthuat} → bỏ qua lỗi trùng`);
+            return res.json({ success: true, message: 'Nhóm đã tồn tại, tiếp tục...' });
+        }
+
+        res.status(500).json({ success: false, message: error.message });
+    } finally {
+        if (pool) await pool.close().catch(() => {});
+    }
+});
+
+// ================== API TẠO NHÓM THỦ THUẬT ==================
+app.post('/api/create-thuthuat-group', async (req, res) => {
+    const { connection, idnhomthuthuat, nhomthuthuat } = req.body;
+    if (!connection || !idnhomthuthuat || !nhomthuthuat) {
+        return res.status(400).json({ success: false, message: 'Thiếu dữ liệu nhóm' });
+    }
+
+    let pool;
+    try {
+        const config = {
+            server: connection.server,
+            database: connection.db,
+            options: { encrypt: false, trustServerCertificate: true }
+        };
+        if (!connection.winAuth && connection.user && connection.pass) {
+            config.authentication = { type: 'default', options: { userName: connection.user, password: connection.pass } };
+        }
+
+        pool = new sql.ConnectionPool(config);
+        await pool.connect();
+
+        await pool.request()
+            .input('idnhomthuthuat', sql.VarChar(12), idnhomthuthuat)
+            .input('nhomthuthuat', sql.NVarChar(200), nhomthuthuat)
+            .query(`INSERT INTO tblNhomthuthuat (idnhomthuthuat, nhomthuthuat) VALUES (@idnhomthuthuat, @nhomthuthuat)`);
+
+        console.log(`Tạo nhóm thành công: ${idnhomthuthuat}`);
+        res.json({ success: true });
+    } catch (err) {
+        if (err.message.includes('PRIMARY KEY') || err.number === 2627) {
+            console.log(`Nhóm đã tồn tại: ${idnhomthuthuat}`);
+            return res.json({ success: true });
+        }
+        console.error('Lỗi tạo nhóm:', err.message);
+        res.status(500).json({ success: false, message: err.message });
+    } finally {
+        if (pool) await pool.close().catch(() => {});
+    }
+});
+
+// ================== API IMPORT THỦ THUẬT ==================
+app.post('/api/import-thuthuat', async (req, res) => {
+    const { connection, data, idnhomthuthuat } = req.body;
+
+    if (!connection || !Array.isArray(data) || data.length === 0 || !idnhomthuthuat) {
+        return res.status(400).json({ success: false, message: 'Dữ liệu không hợp lệ' });
+    }
+
+    let pool;
+    try {
+        const config = {
+            server: connection.server,
+            database: connection.db,
+            options: { encrypt: false, trustServerCertificate: true, requestTimeout: 300000 }
+        };
+        if (!connection.winAuth && connection.user && connection.pass) {
+            config.authentication = { type: 'default', options: { userName: connection.user, password: connection.pass } };
+        }
+
+        pool = new sql.ConnectionPool(config);
+        await pool.connect();
+
+        const transaction = pool.transaction();
+        await transaction.begin();
+
+        const today = new Date();
+        const prefix = String(today.getDate()).padStart(2,'0') +
+                      String(today.getMonth()+1).padStart(2,'0') +
+                      (today.getFullYear() + 1);
+
+        let success = 0;
+        const errors = [];
+
+        for (let i = 0; i < data.length; i++) {
+            const row = data[i];
+            const seq = String(i + 1).padStart(4, '0');
+            const idthuthuat = prefix + seq; // 091220260001
+
+            const tenthuthuat = String(row.tenthuthuat || '').trim();
+            const dongia = parseFloat(row.dongia) || 0;
+            const giamgia = parseFloat(row.giamgia) || 0;
+
+            if (!tenthuthuat) {
+                errors.push(`Dòng ${i+2}: Thiếu tên thủ thuật`);
+                continue;
+            }
+
+            try {
+                await transaction.request()
+                    .input('idthuthuat', sql.VarChar(12), idthuthuat)
+                    .input('tenthuthuat', sql.NVarChar(500), tenthuthuat)
+                    .input('idnhomthuthuat', sql.VarChar(12), idnhomthuthuat)
+                    .input('dongia', sql.Decimal(18,0), dongia)
+                    .input('giamgia', sql.Decimal(18,0), giamgia)
+                    .query(`
+                        INSERT INTO tblThuthuat 
+                        (idthuthuat, tenthuthuat, idnhomthuthuat, dongia, giamgia)
+                        VALUES (@idthuthuat, @tenthuthuat, @idnhomthuthuat, @dongia, @giamgia)
+                    `);
+                success++;
+            } catch (e) {
+                errors.push(`Dòng ${i+2}: ${e.message}`);
+            }
+        }
+
+        await transaction.commit();
+        console.log(`Import thành công ${success}/${data.length} thủ thuật vào nhóm ${idnhomthuthuat}`);
+        res.json({ success: true, data: { success, failed: errors.length }, errors });
+    } catch (err) {
+        console.error('Lỗi import:', err.message);
+        res.status(500).json({ success: false, message: err.message });
+    } finally {
+        if (pool) await pool.close().catch(() => {});
+    }
+});
+
 
 // === HEALTH & ERROR ===
 app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Server chạy tốt!', time: new Date().toLocaleString('vi-VN') }));
@@ -308,4 +488,6 @@ app.listen(PORT, () => {
     console.log(`Health check: http://localhost:${PORT}/api/health`);
     console.log(`API Import: POST http://localhost:${PORT}/api/import-patients`);
     console.log(`API hiển thị mật khẩu: POST http://localhost:${PORT}/api/show-passwords`);
+    console.log(`API tạo nhóm: POST /api/create-thuthuat-group`);
+    console.log(`API import thủ thuật: POST /api/import-thuthuat`);
 });

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đổ Dữ Liệu Thủ Thuật</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" href="images/apache_orc_logo_icon_167862.png" type="image/x-icon">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:"Segoe UI",sans-serif;min-height:100vh;background:linear-gradient(135deg,#1e3c72,#2a5298,#121827);background-image:url('images/234.png');background-size:cover;background-attachment:fixed;display:flex;align-items:flex-start;justify-content:center;padding:30px 20px;color:#e0e0e0}
+        body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:-1}
+        .container{width:98%;max-width:1650px;background:rgba(31,37,51,0.98);border-radius:20px;box-shadow:0 25px 70px rgba(0,0,0,0.8);padding:40px;border:1px solid rgba(0,188,212,0.35);backdrop-filter:blur(14px);position:relative;margin-top:20px}
+        .close-btn{position:absolute;top:15px;right:22px;font-size:34px;color:#ccc;cursor:pointer;transition:.3s}
+        .close-btn:hover{color:#00bcd4;transform:scale(1.25) rotate(90deg)}
+        h1{text-align:center;color:#00bcd4;font-size:2.4em;margin-bottom:35px;text-shadow:0 3px 12px rgba(0,188,212,0.5);letter-spacing:1px}
+        .upload-area{text-align:center;padding:40px 30px;background:rgba(0,188,212,0.12);border:2px dashed #00bcd4;border-radius:18px;transition:all .4s;margin-bottom:35px;cursor:pointer}
+        .upload-area:hover{background:rgba(0,188,212,0.2);border-color:#00e5ff}
+        .upload-area.dragover{background:rgba(0,188,212,0.28);border-color:#00e5ff;transform:scale(1.015)}
+        .upload-icon{width:110px;height:110px;background:url('images/icons8-upload-100.png') center/contain no-repeat;background-size:88%;margin:0 auto 20px}
+        .file-input-wrapper{position:relative;display:inline-block;width:100%;margin:18px 0}
+        #excelFile{position:absolute;inset:0;opacity:0;cursor:pointer}
+        .custom-upload-btn{display:inline-block;padding:11px 36px;background:linear-gradient(45deg,#00bcd4,#0097a7);color:#fff;border-radius:50px;font-weight:600;box-shadow:0 6px 20px rgba(0,188,212,0.45);transition:all .35s;cursor:pointer}
+        .custom-upload-btn:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 12px 30px rgba(0,188,212,0.6)}
+        .file-info{display:flex;align-items:center;justify-content:center;gap:16px;margin:22px 0 28px;flex-wrap:wrap}
+        .file-name{font-size:16px;color:#00e5ff;padding:10px 22px;background:rgba(0,188,212,0.25);border-radius:12px;max-width:480px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid rgba(0,188,212,0.5)}
+        .clear-btn-inline,.sql-btn{padding:10px 26px;border:none;border-radius:12px;font-weight:600;cursor:pointer;transition:all .3s}
+        .clear-btn-inline{background:linear-gradient(45deg,#e74c3c,#c0392b);color:#fff}
+        .sql-btn{background:linear-gradient(45deg,#27ae60,#1e8449);color:#fff;display:flex;align-items:center;gap:8px}
+        #output{margin-top:20px;border-radius:14px;overflow:hidden;background:rgba(20,25,35,0.9);box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+        table{width:100%;min-width:1400px;border-collapse:collapse;font-size:15px}
+        thead th{background:linear-gradient(45deg,#00bcd4,#0097a7);color:#000;padding:16px;text-align:center;font-weight:700;position:sticky;top:0;z-index:10;text-transform:uppercase}
+        tbody td{padding:14px 16px;border-bottom:1px solid rgba(0,188,212,0.15);color:#e0e0e0;white-space:nowrap}
+        tbody tr:hover td{background:rgba(0,188,212,0.22);color:#fff}
+        tbody tr:nth-child(even) td{background:rgba(35,41,53,0.6)}
+
+        .overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(16px)}
+        .overlay.show{display:flex}
+        .loading-box{width:380px;background:rgba(25,32,48,0.98);border-radius:20px;padding:35px 40px;box-shadow:0 30px 80px rgba(0,0,0,0.9);border:1px solid rgba(0,188,212,0.4);text-align:center;position:relative;overflow:hidden}
+        .loading-box::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,188,212,0.15),transparent);animation:shine 3s infinite}
+        @keyframes shine{0%{left:-100%}100%{left:100%}}
+        .loading-title{font-size:22px;color:#00e5ff;margin-bottom:20px;font-weight:600;letter-spacing:1px}
+        .progress-circle{width:140px;height:140px;margin:0 auto 25px;position:relative}
+        .progress-circle svg{width:140px;height:140px;transform:rotate(-90deg)}
+        .progress-circle circle{background:transparent;stroke:rgba(0,188,212,0.2);fill:none;stroke-width:10}
+        .progress-circle .progress{stroke:#00e5ff;stroke-linecap:round;stroke-width:10;transition:stroke-dashoffset .8s ease}
+        .progress-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:32px;font-weight:bold;color:#4caf50}
+        .progress-info{font-size:16px;color:#ccc;margin:15px 0}
+        .progress-bar-small{height:6px;background:rgba(0,188,212,0.2);border-radius:3px;overflow:hidden;margin-top:20px}
+        .progress-fill-small{height:100%;width:0%;background:linear-gradient(90deg,#00bcd4,#00e5ff);border-radius:3px;transition:width .6s ease;box-shadow:0 0 15px rgba(0,229,255,0.6)}
+
+        .alert{position:fixed;top:25px;right:25px;padding:18px 30px;border-radius:16px;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,0.5);min-width:340px;display:flex;align-items:center;gap:14px;transform:translateX(420px);transition:transform .6s cubic-bezier(0.18,0.89,0.32,1.28);z-index:1000}
+        .alert.show{transform:translateX(0)}
+        .alert.success{background:linear-gradient(135deg,#4caf50,#43a047)}
+        .alert.error{background:linear-gradient(135deg,#f44336,#d32f2f)}
+        .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:2000}
+        .modal.show{display:flex}
+        .modal-content{background:rgba(31,37,51,0.98);padding:35px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.9);width:90%;max-width:500px;border:1px solid rgba(0,188,212,0.3);backdrop-filter:blur(10px)}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;border-bottom:2px solid rgba(0,188,212,0.2);padding-bottom:15px}
+        .modal-header h3{color:#00bcd4;font-size:1.4em;margin:0}
+        .close-modal{color:#aaa;font-size:28px;cursor:pointer}
+        .close-modal:hover{color:#00bcd4}
+        .form-group{margin-bottom:18px}
+        .form-group label{display:block;color:#aaa;margin-bottom:8px;font-size:12px;font-weight:600;text-transform:uppercase}
+        .form-group input{width:100%;padding:11px;border:1px solid #2e3547;border-radius:8px;background:rgba(35,41,53,0.8);color:#fff;transition:all .3s}
+        .form-group input:focus{border-color:#00bcd4;box-shadow:0 0 12px rgba(0,188,212,0.6);outline:none}
+        .alert-modal{padding:12px;margin:15px 0;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:10px}
+        .alert-modal.success{background:rgba(76,175,80,0.15);border:1px solid rgba(76,175,80,0.5);color:#4caf50}
+        .alert-modal.error{background:rgba(244,67,54,0.15);border:1px solid rgba(244,67,54,0.5);color:#ef5350}
+        .alert-modal.loading{background:rgba(0,188,212,0.15);border:1px solid rgba(0,188,212,0.5);color:#00bcd4}
+        .modal-buttons{display:flex;gap:12px;margin-top:25px}
+        .btn-cancel,.btn-submit{flex:1;padding:12px;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all .3s}
+        .btn-cancel{background:#444c5c;color:#fff}
+        .btn-submit{background:linear-gradient(45deg,#00bcd4,#00acc1);color:#fff;box-shadow:0 4px 15px rgba(0,188,212,0.4)}
+        .btn-submit:hover{background:linear-gradient(45deg,#00acc1,#0097a7);box-shadow:0 6px 25px rgba(0,188,212,0.6)}
+        .confirm-icon{font-size:68px;color:#4caf50;margin-bottom:20px}
+    </style>
+</head>
+<body>
+    <div class="overlay" id="loadingOverlay">
+        <div class="loading-box">
+            <div class="loading-title">Đang Đổ Dữ Liệu Thủ Thuật</div>
+            <div class="progress-circle">
+                <svg>
+                    <circle cx="70" cy="70" r="60"></circle>
+                    <circle cx="70" cy="70" r="60" class="progress" stroke-dasharray="377" stroke-dashoffset="377" id="circleProgress"></circle>
+                </svg>
+                <div class="progress-text" id="progressPercent">0%</div>
+            </div>
+            <div class="progress-info" id="progressInfo">Đang chuẩn bị dữ liệu...</div>
+            <div class="progress-bar-small">
+                <div class="progress-fill-small" id="progressFillSmall"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <span class="close-btn" onclick="location.href='index.html'">×</span>
+        <h1>Đổ Dữ Liệu Thủ Thuật Từ Excel</h1>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon"></div>
+            <p style="color:#ccc;font-size:18px;margin:15px 0">Kéo & thả file Excel hoặc</p>
+            <div class="file-input-wrapper">
+                <input type="file" id="excelFile" accept=".xlsx,.xls">
+                <div class="custom-upload-btn">Chọn File Excel</div>
+            </div>
+            <div class="file-info" id="fileInfo" style="display:none">
+                <div class="file-name" id="fileName"></div>
+                <button class="clear-btn-inline" onclick="clearFile()">Xóa File</button>
+                <button class="sql-btn" onclick="openSQLModal()">SQL Server</button>
+            </div>
+        </div>
+
+        <div id="output"></div>
+    </div>
+
+    <!-- Modal kết nối SQL -->
+    <div id="sqlModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Kết Nối SQL Server</h3>
+                <span class="close-modal" onclick="closeSQLModal()">×</span>
+            </div>
+            <form id="sqlForm">
+                <div class="form-group"><label>Server Name *</label><input type="text" id="sqlServer" placeholder="localhost\\SQLEXPRESS" required></div>
+                <div class="form-group"><label>Database Name *</label><input type="text" id="sqlDatabase" placeholder="NKS" required></div>
+                <div class="form-group"><label>Username</label><input type="text" id="sqlUsername"></div>
+                <div class="form-group"><label>Password</label><input type="password" id="sqlPassword"></div>
+                <div id="sqlAlert" class="alert-modal" style="display:none"></div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeSQLModal()">Hủy</button>
+                    <button type="submit" class="btn-submit">Kết Nối</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal xác nhận import -->
+    <div id="confirmImportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color:#00e5ff">Xác Nhận Đổ Dữ Liệu Thủ Thuật</h3>
+                <span class="close-modal" onclick="closeConfirmModal()">×</span>
+            </div>
+            <div style="text-align:center;padding:20px 10px">
+                <i class="fas fa-check-circle confirm-icon"></i>
+                <h4 style="color:#00e5ff;margin:15px 0">Kết nối thành công!</h4>
+                <p style="color:#ccc;line-height:1.6">
+                    Server: <strong style="color:#00e5ff" id="confirmServer"></strong><br>
+                    Database: <strong style="color:#00e5ff" id="confirmDatabase"></strong><br><br>
+                    Sẵn sàng import <strong style="color:#4caf50" id="confirmRows">0</strong> thủ thuật.
+                </p>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel" onclick="closeConfirmModal()">Hủy</button>
+                <button type="button" class="btn-submit" onclick="startImport()">Tiến Hành Import</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let excelData = null;
+        let sqlConnection = null;
+
+        const fileInput = document.getElementById('excelFile');
+        const fileName = document.getElementById('fileName');
+        const fileInfo = document.getElementById('fileInfo');
+        const output = document.getElementById('output');
+
+        fileInput.addEventListener('change', () => {
+            if (!fileInput.files[0]) return;
+            fileName.textContent = fileInput.files[0].name;
+            fileInfo.style.display = 'flex';
+            readExcel(fileInput.files[0]);
+        });
+
+        function readExcel(file) {
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.classList.add('show');
+    document.getElementById('progressInfo').textContent = 'Đang đọc file Excel...';
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        try {
+            const workbook = XLSX.read(e.target.result, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rawData = XLSX.utils.sheet_to_json(sheet, { defval: '', header: 1 }); // ĐỌC DƯỚI DẠNG MẢNG
+
+            if (rawData.length < 2) throw new Error('File Excel trống hoặc không có dữ liệu');
+
+            // DÒNG ĐẦU LÀ TIÊU ĐỀ – CHUẨN HÓA ĐỂ SO SÁNH
+            const header = rawData[0].map(h => String(h).trim().toLowerCase()
+                .replace(/đ/g, 'd')
+                .replace(/[^a-zA-Z0-9]/g, '') // bỏ hết dấu cách, dấu, chữ cái đặc biệt
+            );
+
+            // TÌM CHỈ SỐ CỘT
+            const colTen = header.findIndex(h => h.includes('ten') || h.includes('thu') || h.includes('thuthuat'));
+            const colDonGia = header.findIndex(h => h.includes('don') || h.includes('gia') || h.includes('dongia'));
+            const colGiamGia = header.findIndex(h => h.includes('giam') || h.includes('giamgia'));
+
+            if (colTen === -1) throw new Error('Không tìm thấy cột tên thủ thuật');
+
+            // LẤY DỮ LIỆU TỪ DÒNG 2 TRỞ ĐI
+            excelData = rawData.slice(1).map((row, idx) => {
+                if (!row || row.length === 0) return null;
+
+                const ten = String(row[colTen] || '').trim();
+                if (!ten) return null;
+
+                const dongia = parseFloat(row[colDonGia] || 0) || 0;
+                const giamgia = parseFloat(row[colGiamGia] || 0) || 0;
+
+                return { tenthuthuat: ten, dongia, giamgia };
+            }).filter(Boolean);
+
+            renderTable();
+            showAlert(`Đã tải thành công ${excelData.length} thủ thuật từ Excel`, 'success');
+        } catch (err) {
+            console.error(err);
+            showAlert('Lỗi đọc file: ' + err.message, 'error');
+        } finally {
+            overlay.classList.remove('show');
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+        function renderTable() {
+            if (!excelData || excelData.length === 0) {
+                output.innerHTML = '<p style="text-align:center;color:#888;padding:80px;font-size:19px">Không có dữ liệu</p>';
+                return;
+            }
+            let html = '<div style="overflow-x:auto"><table><thead><tr>';
+            Object.keys(excelData[0]).forEach(k => html += `<th>${k}</th>`);
+            html += '</tr></thead><tbody>';
+            excelData.forEach(r => {
+                html += '<tr>';
+                Object.values(r).forEach(v => html += `<td>${v}</td>`);
+                html += '</tr>';
+            });
+            html += '</tbody></table></div>';
+            output.innerHTML = html;
+        }
+
+        const uploadArea = document.getElementById('uploadArea');
+        ['dragover','dragenter'].forEach(ev => uploadArea.addEventListener(ev, e=>{e.preventDefault();uploadArea.classList.add('dragover')}));
+        ['dragleave','dragend','drop'].forEach(ev => uploadArea.addEventListener(ev, e=>{e.preventDefault();uploadArea.classList.remove('dragover')}));
+        uploadArea.addEventListener('drop', e => {
+            const file = e.dataTransfer.files[0];
+            if (file && /\.(xlsx?|xls?)$/i.test(file.name)) {
+                fileInput.files = e.dataTransfer.files;
+                fileName.textContent = file.name;
+                fileInfo.style.display = 'flex';
+                readExcel(file);
+            }
+        });
+
+        function clearFile() {
+            fileInput.value = ''; excelData = null;
+            fileInfo.style.display = 'none';
+            output.innerHTML = '';
+            showAlert('Đã xóa file', 'error');
+        }
+
+        function showAlert(msg, type='success') {
+            const el = document.createElement('div');
+            el.className = `alert ${type}`;
+            el.innerHTML = `<span>${msg}</span>`;
+            document.body.appendChild(el);
+            setTimeout(() => el.classList.add('show'), 50);
+            setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 600); }, 4000);
+        }
+
+        function openSQLModal() { document.getElementById('sqlModal').classList.add('show'); }
+        function closeSQLModal() { document.getElementById('sqlModal').classList.remove('show'); }
+
+        function showSQLAlert(msg, type = 'loading') {
+            const alert = document.getElementById('sqlAlert');
+            alert.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':type==='error'?'fa-times-circle':'fa-spinner fa-spin'}"></i><span>${msg}</span>`;
+            alert.className = `alert-modal ${type}`;
+            alert.style.display = 'flex';
+        }
+
+        document.getElementById('sqlForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const server = document.getElementById('sqlServer').value.trim();
+            const db = document.getElementById('sqlDatabase').value.trim();
+            const user = document.getElementById('sqlUsername').value.trim();
+            const pass = document.getElementById('sqlPassword').value;
+            const btn = e.target.querySelector('.btn-submit');
+            if (!server || !db) return showSQLAlert('Nhập Server và Database', 'error');
+
+            showSQLAlert('Đang kết nối...', 'loading');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/test-connection', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({
+                        serverName: server,
+                        databaseName: db,
+                        username: user || null,
+                        password: pass || null,
+                        useWindowAuth: !user && !pass
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    sqlConnection = {server, db, user: user||null, pass: pass||null, winAuth: !user && !pass};
+                    closeSQLModal();
+                    setTimeout(openConfirmModal, 300);
+                } else showSQLAlert('Kết nối thất bại: ' + data.message, 'error');
+            } catch { showSQLAlert('Lỗi kết nối server!', 'error'); }
+            finally { btn.disabled = false; }
+        });
+
+        function openConfirmModal() {
+            document.getElementById('confirmServer').textContent = sqlConnection.server;
+            document.getElementById('confirmDatabase').textContent = sqlConnection.db;
+            document.getElementById('confirmRows').textContent = excelData ? excelData.length : 0;
+            document.getElementById('confirmImportModal').classList.add('show');
+        }
+        function closeConfirmModal() { document.getElementById('confirmImportModal').classList.remove('show'); }
+
+        async function startImport() {
+    if (!excelData || excelData.length === 0) return showAlert('Không có dữ liệu Excel!', 'error');
+    if (!sqlConnection) return showAlert('Chưa kết nối SQL Server!', 'error');
+
+    closeConfirmModal();
+
+    const overlay = document.getElementById('loadingOverlay');
+    const percentEl = document.getElementById('progressPercent');
+    const circleEl = document.getElementById('circleProgress');
+    const fillSmall = document.getElementById('progressFillSmall');
+    const infoEl = document.getElementById('progressInfo');
+
+    overlay.classList.add('show');
+    percentEl.textContent = '0%';
+    circleEl.style.strokeDashoffset = '377';
+    fillSmall.style.width = '0%';
+    infoEl.textContent = 'Đang khởi tạo...';
+
+    try {
+        // TẠO MÃ NHÓM 12 SỐ (ddMMyyyy+1 + 0000)
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yyyy = today.getFullYear() + 1;
+        const idnhomthuthuat = `${dd}${mm}${yyyy}0000`; // Ví dụ: 091220260000
+
+        infoEl.textContent = 'Đang tạo nhóm thủ thuật...';
+
+        // BƯỚC 1: TẠO NHÓM
+        const groupRes = await fetch('/api/create-thuthuat-group', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                connection: sqlConnection,
+                idnhomthuthuat: idnhomthuthuat,
+                nhomthuthuat: 'Nhóm Thủ Thuật Đổ Dữ Liệu'
+            })
+        });
+
+        const groupResult = await groupRes.json();
+        if (!groupResult.success && !groupResult.message?.includes('tồn tại')) {
+            throw new Error(groupResult.message || 'Không thể tạo nhóm thủ thuật');
+        }
+
+        infoEl.textContent = `Nhóm ${idnhomthuthuat} sẵn sàng...`;
+        updateProgress(30);
+
+        // BƯỚC 2: ĐỔ DỮ LIỆU THỦ THUẬT (dùng đúng idnhomthuthuat vừa tạo)
+        const importRes = await fetch('/api/import-thuthuat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                connection: sqlConnection,
+                data: excelData,
+                idnhomthuthuat: idnhomthuthuat  // DÙNG ĐÚNG MÃ NHÓM VỪA TẠO
+            })
+        });
+
+        const importResult = await importRes.json();
+
+        // Hoàn thành loading
+        percentEl.textContent = '100%';
+        circleEl.style.strokeDashoffset = '0';
+        fillSmall.style.width = '100%';
+
+        setTimeout(() => {
+            overlay.classList.remove('show');
+
+            if (importResult.success) {
+                    showAlert(`ĐỔ DỮ LIỆU THÀNH CÔNG ${importResult.data?.success || excelData.length} thủ thuật `, 'success');
+            } else {
+                 showAlert(`Lỗi Không Xác Định`, 'error');
+            }
+        }, 1000);
+
+    } catch (err) {
+        percentEl.textContent = '100%';
+        fillSmall.style.width = '100%';
+        setTimeout(() => {
+            overlay.classList.remove('show');
+            showAlert(`
+                <strong style="color:#ff5252;">Lỗi hệ thống!</strong><br><br>
+                Chi tiết: ${err.message || 'Không xác định'}
+            `, 'error');
+        }, 1000);
+    }
+}
+
+// Hỗ trợ cập nhật tiến độ mượt
+function updateProgress(percent) {
+    document.getElementById('progressPercent').textContent = percent + '%';
+    const offset = 377 - (377 * percent / 100);
+    document.getElementById('circleProgress').style.strokeDashoffset = offset;
+    document.getElementById('progressFillSmall').style.width = percent + '%';
+}
+
+        window.addEventListener('click', e => {
+            if (e.target.classList.contains('modal')) e.target.classList.remove('show');
+        });
+    </script>
+</body>
+</html>
