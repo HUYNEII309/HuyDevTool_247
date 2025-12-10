@@ -286,10 +286,16 @@ body::before {
 /* ================================================= */
 
 .dark-dashboard-mode {
-    background-image: none !important;
+    /* Dùng background-image cho trang Login */
+    background-image: url('images/234.png'); 
+    background-size: cover;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: block;
+    /* background-image: none !important;
     background-color: #171c26; 
     min-height: 100vh;
-    display: block; 
+    display: block;  */
 }
 
 .dark-dashboard-mode::before {
