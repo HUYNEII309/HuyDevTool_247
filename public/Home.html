@@ -159,6 +159,50 @@
         </div>
     </main>
 
+<main class="dashboard-main-content">
+    <div class="greeting-section">
+        <h3>Chức năng khác</h3>
+        </div>
+        <div class="card-grid">
+            <!-- Tải video Facebook  -->
+            <div class="function-card">
+                <div class="card-header">
+                   <img src="images/icons8-download-60.png" alt="Icon" class="card-icon">
+                    <h3>Tải video Facebook</h3>
+                </div>
+                <p class="card-description">Tải các video từ Facebook.</p>
+                <div class="card-actions">
+                    <button class="btn btn-primary btn-download" onclick="OpengoToDoDownloadFB()">Download</button>
+                </div>
+            </div>
+            <!-- Tải video tiktok   -->
+             <div class="function-card">
+                <div class="card-header">
+                   <img src="images/icons8-tiktok-60 (2).png" alt="Icon" class="card-icon">
+                    <h3>Tải video Tiktok</h3>
+                </div>
+                <p class="card-description">Tải các video từ Tiktok.</p>
+                <div class="card-actions">
+                    <button class="btn btn-primary btn-download" onclick="OpengoToDoDownloadTikTok()">Download</button>
+                </div>
+            </div>
+
+            <!-- Tải video Youtube   -->
+             <div class="function-card">
+                <div class="card-header">
+                   <img src="images/icons8-youtube-70.png" alt="Icon" class="card-icon">
+                    <h3>Tải video Youtube</h3>
+                </div>
+                <p class="card-description">Tải các video từ Youtube.</p>
+                <div class="card-actions">
+                    <button class="btn btn-primary btn-download" onclick="OpengoToDoDownloadYTB()">Download</button>
+                </div>
+            </div>
+        </div>
+</main>
+
+
+
 <!-- Modal hướng dẫn định dạng ngày giờ -->
 <div id="guideModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
@@ -432,7 +476,349 @@
     </div>
 </div>
 
+
+<!-- Modal tải video Facebook – Kết quả hiển thị ngay dưới nút Download -->
+<div id="fbDownloadModal" class="modal-overlay">
+    <div class="modal-content" style="position:relative; max-width:600px; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.15);">
+        
+        <!-- Nút đóng (X) -->
+        <button onclick="closeToDoDownloadFB()" 
+            style="position:absolute; top:16px; right:20px; z-index:10; width:36px; height:36px; background:#fff; border:none; border-radius:50%; font-size:24px; color:#888; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1); transition:all 0.2s;">
+            ×
+        </button>
+
+        <!-- Header -->
+        <div style="padding:30px 40px 20px; text-align:center;">
+            <h2 style="font-size:28px; font-weight:700; color:#1a1a1a; margin:0 0 8px;">Download Facebook Videos</h2>
+            <p style="color:#666; margin:0 0 30px; font-size:15px;">Enter a Facebook video URL and select your preferred quality</p>
+        </div>
+
+        <!-- Form chính (input + nút + kết quả) -->
+        <div style="padding:0 40px 40px;">
+
+            <!-- Input URL -->
+            <div style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">Facebook Video URL</label>
+                <input type="text" id="fbVideoUrl" placeholder="https://www.facebook.com/watch?v=..."
+                    style="width:100%; padding:16px; border-radius:12px; border:1px solid #ddd; background:#f9f9f9; font-size:16px; color:#333;"
+                    onkeypress="if(event.key==='Enter') fetchFBInfo()">
+            </div>
+
+            <!-- Nút Download đẹp + hiệu ứng -->
+            <button onclick="fetchFBInfo()"
+                style="width:100%; padding:18px; background:#1877f2; color:#fff; font-size:18px; font-weight:600; border:none; border-radius:12px; cursor:pointer; 
+                       box-shadow:0 4px 15px rgba(24,119,242,0.4); transition:all 0.3s ease; position:relative; overflow:hidden;"
+                onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 25px rgba(24,119,242,0.5)'"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(24,119,242,0.4)'">
+                Download Video
+            </button>
+
+            <!-- Khu vực hiển thị kết quả – ngay bên dưới nút Download -->
+            <div id="fbVideoInfo" style="margin-top:30px; display:none;">
+                <!-- Nội dung sẽ được JS chèn vào đây -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal tải video TikTok – Thiết kế giống Facebook 100% -->
+<div id="tiktokDownloadModal" class="modal-overlay">
+    <div class="modal-content" style="position:relative; max-width:600px; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.15);">
+        
+        <!-- Nút đóng (X) -->
+        <button onclick="closeToDoDownloadTikTok()" 
+            style="position:absolute; top:16px; right:20px; z-index:10; width:36px; height:36px; background:#fff; border:none; border-radius:50%; font-size:24px; color:#888; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1); transition:all 0.2s;">
+            X
+        </button>
+
+        <!-- Header TikTok -->
+        <div style="padding:30px 40px 20px; text-align:center;">
+            <h2 style="font-size:28px; font-weight:700; color:#1a1a1a; margin:0 0 8px;">
+                <span style="color:#ff0050;">●</span> Download TikTok Videos
+            </h2>
+            <p style="color:#666; margin:0 0 30px; font-size:15px;">
+                Dán link TikTok – tải video không logo, chất lượng cao nhất
+            </p>
+        </div>
+
+        <!-- Form chính -->
+        <div style="padding:0 40px 40px;">
+
+            <!-- Input URL -->
+            <div style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">
+                    TikTok Video URL
+                </label>
+                <input 
+                    type="text" 
+                    id="tiktokVideoUrl" 
+                    placeholder="https://www.tiktok.com/@username/video/123456789" 
+                    style="width:100%; padding:16px; border-radius:12px; border:1px solid #ddd; background:#f9f9f9; font-size:16px; color:#333;"
+                    onkeypress="if(event.key==='Enter') fetchTikTokInfo()">
+            </div>
+
+            <!-- Nút Download – Màu TikTok (đen + đỏ) -->
+            <button onclick="fetchTikTokInfo()"
+                style="width:100%; padding:18px; background:#000; color:#fff; font-size:18px; font-weight:700; border:none; border-radius:12px; cursor:pointer; 
+                       box-shadow:0 4px 15px rgba(0,0,0,0.3); transition:all 0.3s ease; position:relative; overflow:hidden;"
+                onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.4)'"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.3)'">
+                Tải video TikTok ngay
+            </button>
+
+            <!-- Khu vực hiển thị kết quả -->
+            <div id="tiktokVideoInfo" style="margin-top:30px; display:none;">
+                <!-- Nội dung sẽ được JS chèn vào đây -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal tải video YouTube -->
+<div id="youtubeDownloadModal" class="modal-overlay">
+    <div class="modal-content" style="position:relative; max-width:600px; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.15);">
+        
+        <!-- Nút đóng (X) -->
+        <button onclick="closeToDoDownloadYTB()" 
+            style="position:absolute; top:16px; right:20px; z-index:10; width:36px; height:36px; background:#fff; border:none; border-radius:50%; font-size:24px; color:#888; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1); transition:all 0.2s;">
+            ×
+        </button>
+
+        <!-- Header YouTube -->
+        <div style="padding:30px 40px 20px; text-align:center;">
+            <h2 style="font-size:28px; font-weight:700; color:#1a1a1a; margin:0 0 8px; display:flex; align-items:center; justify-content:center; gap:10px;">
+                <span style="color:#FF0000; font-size:36px;">▶</span>
+                Download YouTube Videos
+            </h2>
+            <p style="color:#666; margin:0 0 30px; font-size:15px;">
+                Dán link YouTube – tải video hoặc chỉ âm thanh (MP4 / MP3)
+            </p>
+        </div>
+
+        <!-- Form chính -->
+        <div style="padding:0 40px 40px;">
+
+            <!-- Input URL Input -->
+            <div style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">
+                    YouTube Video URL
+                </label>
+                <input 
+                    type="text" 
+                    id="youtubeVideoUrl" 
+                    placeholder="https://www.youtube.com/watch?v=..." 
+                    style="width:100%; padding:16px; border-radius:12px; border:1px solid #ddd; background:#f9f9f9; font-size:16px; color:#333;">
+            </div>
+
+            <!-- Nút Download – Màu đỏ YouTube -->
+            <button onclick="fetchYoutubeInfo()"
+                style="width:100%; padding:18px; background:#FF0000; color:#fff; font-size:18px; font-weight:700; border:none; border-radius:12px; cursor:pointer; 
+                       box-shadow:0 4px 15px rgba(255,0,0,0.4); transition:all 0.3s ease; position:relative; overflow:hidden;"
+                onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 30px rgba(255,0,0,0.5)'"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255,0,0,0.4)'">
+                Tải video YouTube ngay
+            </button>
+
+            <!-- Khu vực hiển thị kết quả (thumbnail, tiêu đề, nút tải...) -->
+            <div id="youtubeVideoInfo" style="margin-top:30px; display:none;">
+                <!-- JS sẽ chèn nội dung vào đây -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- // JavaScript để xử lý tải video Facebook -->
+<script>
+async function fetchFBInfo() {
+    const url = document.getElementById('fbVideoUrl').value.trim();
+    if (!url) return alert('Vui lòng nhập link video Facebook!');
+
+    const quality = document.querySelector('input[name="quality"]:checked')?.value || 'best';
+    const btn = document.querySelector('button[onclick="fetchFBInfo()"]');
+    const oldText = btn.innerHTML;
+
+    btn.disabled = true;
+    btn.innerHTML = 'Đang xử lý…';
+
+    const resultDiv = document.getElementById('fbVideoInfo');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `<div style="text-align:center;padding:50px 0;"><div style="width:56px;height:56px;border:6px solid #1877f2;border-top-color:transparent;border-radius:50%;margin:0 auto 20px;animation:spin 1s linear infinite;"></div><p>Đang lấy video…</p></div>`;
+
+    try {
+        const res = await fetch('https://facebook-video-download-api.onrender.com/download', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url, quality })
+        });
+
+        const data = await res.json();
+        btn.disabled = false;
+        btn.innerHTML = oldText;
+
+        if (data.status !== 'success' || !data.video_info || !data.download_url) {
+            resultDiv.innerHTML = `<div style="background:#ffebee;color:#c62828;padding:20px;border-radius:12px;text-align:center;">Không thể tải video này.<br><small>${data.message || 'Link không hợp lệ hoặc video bị hạn chế.'}</small></div>`;
+            return;
+        }
+
+        const v = data.video_info;
+        const date = v.upload_date ? v.upload_date.replace(/(\d{4})(\d{2})(\d{2})/, '$3/$2/$1') : '';
+        const safeTitle = (v.title || 'Facebook_Video').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 60);
+
+        resultDiv.innerHTML = `
+            <div style="background:#f8f9fa;border-radius:16px;padding:24px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+                ${v.thumbnail ? `<img src="${v.thumbnail}" style="width:100%;height:320px;object-fit:cover;border-radius:16px;margin-bottom:20px;box-shadow:0 12px 30px rgba(0,0,0,0.2);background:#000;" alt="Thumbnail">` : ''}
+
+                <h3 style="margin:12px 0;font-size:19px;color:#1a1a1a;line-height:1.4;font-weight:600;">
+                    ${v.title || 'Video Facebook'}
+                </h3>
+                <p style="color:#65676b;margin:8px 0 24px;font-size:15px;">
+                    <strong>${v.uploader || 'Người dùng Facebook'}</strong> • 
+                    ${new Intl.NumberFormat('vi-VN').format(v.view_count || 0)} lượt xem • ${date}
+                </p>
+
+                <!-- 2 NÚT NẰM CÙNG 1 DÒNG ĐẸP -->
+                <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-bottom:16px;">
+                    <!-- Nút Tải xuống -->
+                    <button id="downloadBtnMain" onclick="downloadVideo('${data.download_url}', '${safeTitle}_${quality}.mp4')"
+                        style="flex:1; min-width:220px; padding:16px; background:#00c853; color:#fff; font-size:18px; font-weight:700; border:none; border-radius:12px; cursor:pointer; box-shadow:0 8px 25px rgba(0,200,83,0.4); transition:all .3s;"
+                        onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 14px 35px rgba(0,200,83,0.5)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0,200,83,0.4)'">
+                        Tải xuống ngay 
+                    </button>
+
+                    <!-- Nút Tải video khác -->
+                    <button onclick="resetForm()"
+                        style="flex:1; min-width:180px; padding:16px; background:#1877f2; color:#fff; font-size:16px; font-weight:600; border:none; border-radius:12px; cursor:pointer; transition:.3s;"
+                        onmouseover="this.style.background='#166fe5'"
+                        onmouseout="this.style.background='#1877f2'">
+                        Tải video khác
+                    </button>
+                </div>
+
+                <!-- Thông báo thành công đẹp + gọn -->
+                <div id="downloadSuccessToast" style="padding:14px 20px; background:#e8f5e8; border-radius:10px; color:#1e7e34; font-weight:600; display:none; align-items:center; gap:10px; font-size:15px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Đã tải xong video !
+                </div>
+            </div>`;
+
+        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    } catch (error) {
+        btn.disabled = false;
+        btn.innerHTML = oldText;
+        resultDiv.innerHTML = `<div style="background:#ffebee;color:#c62828;padding:20px;border-radius:12px;text-align:center;">Lỗi kết nối server. Thử lại sau.</div>`;
+    }
+}
+
+// Tải video + hiện thông báo đẹp
+async function downloadVideo(videoUrl, filename) {
+    const btn = document.getElementById('downloadBtnMain');
+    const toast = document.getElementById('downloadSuccessToast');
+
+    btn.disabled = true;
+    btn.innerHTML = 'Đang tải…';
+
+    try {
+        const response = await fetch(videoUrl);
+        if (!response.ok) throw new Error();
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        // Hiện thông báo thành công đẹp
+        btn.style.background = '#1e7e34';
+        btn.innerHTML = 'Đã tải xong!';
+        toast.style.display = 'flex';
+
+        // Tự ẩn sau 4 giây
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-10px)';
+            toast.style.transition = 'all 0.5s ease';
+            setTimeout(() => toast.style.display = 'none', 500);
+        }, 4000);
+
+    } catch (err) {
+        alert('Không thể tải video. Hãy thử chuột phải → Lưu liên kết dưới dạng...');
+        btn.disabled = false;
+        btn.innerHTML = `Tải xuống ngay (${quality?.toUpperCase() || 'BEST'})`;
+    }
+}
+
+function resetForm() {
+    document.getElementById('fbVideoUrl').value = '';
+    document.getElementById('fbVideoInfo').style.display = 'none';
+    document.getElementById('fbVideoUrl').focus();
+}
+
+function closeToDoDownloadFB() {
+    document.getElementById('fbDownloadModal').style.display = 'none';
+}
+
+// Animation
+document.head.insertAdjacentHTML('beforeend', `
+<style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #downloadSuccessToast { transition: all 0.5s ease; }
+</style>`);
+</script>
+<!-- JS tạo hiệu ứng ripple chính xác tại vị trí click -->
+<script>
+document.querySelector('button[onclick="fetchFBInfo()"]').addEventListener('click', function(e) {
+    let button = e.currentTarget;
+    let ripple = button.querySelector('span');
+    if (!ripple) {
+        ripple = document.createElement('span');
+        button.appendChild(ripple);
+    }
+    
+    let x = e.clientX - button.getBoundingClientRect().left;
+    let y = e.clientY - button.getBoundingClientRect().top;
+    
+    ripple.style.width = ripple.style.height = '300px';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    ripple.classList.remove('animate');
+    void ripple.offsetWidth; // trigger reflow
+    ripple.classList.add('animate');
+});
+</script>
+<!-- //Các xử lý khác  -->
    <script>
+ // Modal YTB
+    function OpengoToDoDownloadYTB() {
+        document.getElementById('youtubeDownloadModal').style.display = 'flex';
+    }
+     function closeToDoDownloadYTB() {
+        document.getElementById('youtubeDownloadModal').style.display = 'none';
+    }
+
+
+     // Modal tiktok
+    function OpengoToDoDownloadTikTok() {
+        document.getElementById('tiktokDownloadModal').style.display = 'flex';
+    }
+     function closeToDoDownloadTikTok() {
+        document.getElementById('tiktokDownloadModal').style.display = 'none';
+    }
+
+
+     // Modal FB
+    function OpengoToDoDownloadFB() {
+        document.getElementById('fbDownloadModal').style.display = 'flex';
+    }
+     function closeToDoDownloadFB() {
+        document.getElementById('fbDownloadModal').style.display = 'none';
+    }
 
     function goToDoThuThuat() {
     window.location.href = "DoDL_ThuThuat.html"; // hoặc trang tương ứng

@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import sql from 'mssql';
 import cors from 'cors';
+import axios from "axios";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +19,8 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
+// Cho phép đọc file HTML
+app.use(express.static(path.join(process.cwd())));
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -471,7 +474,6 @@ app.post('/api/import-thuthuat', async (req, res) => {
         if (pool) await pool.close().catch(() => {});
     }
 });
-
 
 // === HEALTH & ERROR ===
 app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Server chạy tốt!', time: new Date().toLocaleString('vi-VN') }));
