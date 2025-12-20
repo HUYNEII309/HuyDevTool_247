@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Video Downloader</title>
+    <link rel="icon" href="images/apache_orc_logo_icon_167862.png" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('images/234.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .logo {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .header-close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: none;
+            border: none;
+            color: #ff0000;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .header-close:hover {
+            color: #cc0000;
+            transform: scale(1.3);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #ff0000;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 10px;
+            line-height: 1;
+            transition: all 0.3s;
+            display: none;
+            order: 2;
+        }
+
+        .close-btn:hover {
+            color: #cc0000;
+            transform: scale(1.3);
+        }
+
+        .close-btn.show {
+            display: block;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .btn-group .btn {
+            width: auto;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-group .back-btn {
+            flex: 0.6;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .video-preview {
+            background: transparent;
+            border-radius: 15px;
+            padding: 0;
+            position: relative;
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+        }
+
+        .video-container {
+            position: relative;
+            width: 350px;
+            flex-shrink: 0;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-wrapper {
+            width: 100%;
+            position: relative;
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: auto;
+            max-height: 600px;
+            display: block;
+            object-fit: cover;
+        }
+
+        .info-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .video-stats-vertical {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-item-vertical {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .stat-item-vertical:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-item-vertical .icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .stat-item-vertical .count {
+            font-weight: bold;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .author-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .author-details {
+            flex: 1;
+            text-align: left;
+        }
+
+        .author-details .nickname {
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+
+        .author-details .username {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+        }
+
+        .video-info {
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            text-align: left;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-info .title {
+            color: #333;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .download-btn {
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .video-preview {
+                flex-direction: column;
+            }
+
+            .video-container {
+                width: 100%;
+            }
+
+            .video-stats-vertical {
+                flex-direction: row;
+                justify-content: center;
+                padding: 20px 10px;
+            }
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #25d366 0%, #128c42 100%);
+            margin-top: 10px;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
+            font-size: 17px;
+            padding: 12px 35px;
+            border-radius: 12px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            position: relative;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .download-btn:hover {
+            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.7);
+            transform: translateY(-5px) scale(1.03);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .download-btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+        }
+
+        .back-btn:hover {
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: bold;
+            display: none;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .instructions {
+            background: #f0f7ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .instructions li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="Home.html" class="header-close">X</a>
+            <div class="logo">🎵</div>
+            <h1>TikTok Downloader</h1>
+            <p>Tải video TikTok không có watermark</p>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="Dán link TikTok vào đây..." />
+            <button class="close-btn" id="closeBtn">X</button>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn" id="downloadBtn">Tải Video</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Đang xử lý...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="result" id="result">
+            <div class="video-preview">
+                <div class="video-container">
+                    <div class="video-wrapper">
+                        <video id="videoPreview" controls></video>
+                    </div>
+                </div>
+                
+                <div class="info-container">
+                    <div class="author-info">
+                        <img id="authorAvatar" class="author-avatar" src="" alt="Avatar">
+                        <div class="author-details">
+                            <div class="nickname" id="authorNickname"></div>
+                            <div class="username" id="authorUsername"></div>
+                        </div>
+                    </div>
+
+                    <div class="video-info">
+                        <div class="title" id="videoTitle"></div>
+                    </div>
+                    
+                    <div class="video-stats-vertical">
+                        <div class="stat-item-vertical">
+                            <div class="icon">❤️</div>
+                            <div class="count" id="diggCount">0</div>
+                        </div>
+                        <div class="stat-item-vertical">
+                            <div class="icon">💬</div>
+                            <div class="count" id="commentCount">0</div>
+                        </div>
+                        <div class="stat-item-vertical">
+                            <div class="icon">🔖</div>
+                            <div class="count" id="collectCount">0</div>
+                        </div>
+                        <div class="stat-item-vertical">
+                            <div class="icon">🔗</div>
+                            <div class="count" id="shareCount">0</div>
+                        </div>
+                    </div>
+
+                    <button class="btn download-btn" id="finalDownload">⬇️ Tải xuống</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('urlInput');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const result = document.getElementById('result');
+        const videoPreview = document.getElementById('videoPreview');
+        const videoTitle = document.getElementById('videoTitle');
+        const authorAvatar = document.getElementById('authorAvatar');
+        const authorNickname = document.getElementById('authorNickname');
+        const authorUsername = document.getElementById('authorUsername');
+        const diggCount = document.getElementById('diggCount');
+        const commentCount = document.getElementById('commentCount');
+        const collectCount = document.getElementById('collectCount');
+        const shareCount = document.getElementById('shareCount');
+        const finalDownload = document.getElementById('finalDownload');
+
+        let currentVideoUrl = '';
+
+        // Hiển thị/ẩn nút close khi input thay đổi
+        urlInput.addEventListener('input', () => {
+            if (urlInput.value.trim()) {
+                closeBtn.classList.add('show');
+            } else {
+                closeBtn.classList.remove('show');
+            }
+        });
+
+        // Xóa nội dung input khi click nút close
+        closeBtn.addEventListener('click', () => {
+            urlInput.value = '';
+            closeBtn.classList.remove('show');
+            hideResult();
+            hideError();
+            urlInput.focus();
+        });
+
+        // Hàm format số lượng (1000 -> 1K, 1000000 -> 1M)
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        downloadBtn.addEventListener('click', async () => {
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                showError('Vui lòng nhập link TikTok!');
+                return;
+            }
+
+            if (!url.includes('tiktok.com')) {
+                showError('Link không hợp lệ! Vui lòng nhập link TikTok.');
+                return;
+            }
+
+            hideError();
+            hideResult();
+            showLoading();
+            downloadBtn.disabled = true;
+
+            try {
+                // Sử dụng RapidAPI để lấy video TikTok
+                const apiUrl = `https://tiktok-video-no-watermark2.p.rapidapi.com/?url=${encodeURIComponent(url)}&hd=1`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'x-rapidapi-host': 'tiktok-video-no-watermark2.p.rapidapi.com',
+                        'x-rapidapi-key': '73633ff8ebmsh1fdac1697990ffbp1c6989jsnda9fe7b1cee4'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Lỗi API: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.data && data.data.play) {
+                    currentVideoUrl = data.data.play;
+                    videoPreview.src = currentVideoUrl;
+                    
+                    // Hiển thị thông tin video
+                    videoTitle.textContent = data.data.title || 'TikTok Video';
+                    
+                    // Hiển thị thông tin tác giả
+                    if (data.data.author) {
+                        authorAvatar.src = data.data.author.avatar || '';
+                        authorNickname.textContent = data.data.author.nickname || 'Unknown';
+                        authorUsername.textContent = '@' + (data.data.author.unique_id || 'unknown');
+                    }
+                    
+                    // Hiển thị thống kê
+                    diggCount.textContent = formatNumber(data.data.digg_count || 0);
+                    commentCount.textContent = formatNumber(data.data.comment_count || 0);
+                    collectCount.textContent = formatNumber(data.data.collect_count || 0);
+                    shareCount.textContent = formatNumber(data.data.share_count || 0);
+                    
+                    hideLoading();
+                    showResult();
+                } else {
+                    throw new Error('Không thể tải video. Vui lòng thử lại!');
+                }
+            } catch (err) {
+                hideLoading();
+                showError('Lỗi: ' + err.message + '. Vui lòng kiểm tra link và thử lại!');
+            } finally {
+                downloadBtn.disabled = false;
+            }
+        });
+
+        finalDownload.addEventListener('click', async () => {
+            if (currentVideoUrl) {
+                try {
+                    finalDownload.disabled = true;
+                    finalDownload.textContent = '⏳ Đang tải...';
+                    
+                    // Phương pháp 1: Thử fetch trực tiếp
+                    let blob;
+                    try {
+                        const response = await fetch(currentVideoUrl);
+                        blob = await response.blob();
+                    } catch (corsError) {
+                        // Phương pháp 2: Thử với CORS proxy
+                        console.log('Thử với proxy...');
+                        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(currentVideoUrl)}`;
+                        const proxyResponse = await fetch(proxyUrl);
+                        blob = await proxyResponse.blob();
+                    }
+                    
+                    // Tạo URL từ blob và download
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = `tiktok_video_${Date.now()}.mp4`;
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    // Dọn dẹp
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(blobUrl);
+                    }, 100);
+                    
+                    finalDownload.textContent = '✅ Đã tải!';
+                    setTimeout(() => {
+                        finalDownload.textContent = '⬇️ Tải xuống';
+                        finalDownload.disabled = false;
+                    }, 2000);
+                    
+                } catch (err) {
+                    console.error('Download error:', err);
+                    
+                    // Phương pháp cuối: Trigger download trực tiếp (có thể trình duyệt sẽ tải)
+                    try {
+                        const a = document.createElement('a');
+                        a.href = currentVideoUrl;
+                        a.download = `tiktok_video_${Date.now()}.mp4`;
+                        a.setAttribute('crossorigin', 'anonymous');
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        
+                        finalDownload.textContent = '✅ Đang tải...';
+                        setTimeout(() => {
+                            finalDownload.textContent = '⬇️ Tải xuống';
+                            finalDownload.disabled = false;
+                        }, 2000);
+                    } catch (finalErr) {
+                        finalDownload.textContent = '⬇️ Tải xuống';
+                        finalDownload.disabled = false;
+                        showError('Không thể tải video. Vui lòng click chuột phải vào video và chọn "Lưu video dưới dạng..."');
+                    }
+                }
+            }
+        });
+
+        function showLoading() {
+            loading.style.display = 'block';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+        }
+
+        function showError(message) {
+            error.textContent = message;
+            error.style.display = 'block';
+        }
+
+        function hideError() {
+            error.style.display = 'none';
+        }
+
+        function showResult() {
+            result.style.display = 'block';
+        }
+
+        function hideResult() {
+            result.style.display = 'none';
+        }
+
+        // Cho phép nhấn Enter để tải
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                downloadBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>

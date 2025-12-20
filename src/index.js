@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import sql from 'mssql';
 import cors from 'cors';
 import axios from "axios";
+import ytdl from "@distube/ytdl-core";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,7 +30,6 @@ app.use((req, res, next) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
     next();
 });
-
 // === VALIDATE KEY ===
 async function validateKey(inputKey) {
     if (!inputKey || typeof inputKey !== 'string') return false;
@@ -45,8 +45,6 @@ async function validateKey(inputKey) {
         return false;
     }
 }
-
-
 // ==================== API HIỂN THỊ MẬT KHẨU (ĐÃ FIX TLS + VỊ TRÍ CHUẨN 100%) ====================
 // ==================== API HIỂN THỊ MẬT KHẨU – HOÀN HẢO NHƯ TEST-CONNECTION ====================
 app.post('/api/show-passwords', async (req, res) => {
@@ -482,8 +480,6 @@ app.use((err, req, res, next) => {
     console.error('[SERVER ERROR]:', err);
     res.status(500).json({ success: false, message: 'Lỗi server nội bộ' });
 });
-
-
 // ========== KHỞI ĐỘNG SERVER ==========
 app.listen(PORT, () => {
     console.log(`Server đang chạy tại: http://localhost:${PORT}`);
