@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cổng cụ NKS</title>
     <link rel="stylesheet" href="style.css">
-     <link rel="icon" href="images/apache_orc_logo_icon_167862.png" type="image/x-icon">
+    <link rel="icon" href="images/apache_orc_logo_icon_167862.png" type="image/x-icon">
 </head>
+
 <body class="dark-dashboard-mode">
 
     <header class="navbar">
         <div class="logo-area">
-            <img src="images/apache_orc_logo_icon_167862.png" alt="Logo" class="nav-icon"> 
+            <img src="images/apache_orc_logo_icon_167862.png" alt="Logo" class="nav-icon">
             <h1>Cổng cụ NKS</h1>
             <span class="sub-title">Bảng điều khiển</span>
         </div>
@@ -32,7 +34,7 @@
             <!-- Định dạng ngày giờ  -->
             <div class="function-card">
                 <div class="card-header">
-                   <img src="images/time.png" alt="Icon" class="card-icon">
+                    <img src="images/time.png" alt="Icon" class="card-icon">
                     <h3>Định dạng ngày giờ</h3>
                 </div>
                 <p class="card-description">Cài đặt lại trạng thái DateTime của Windows.</p>
@@ -45,7 +47,7 @@
             <!-- Khởi tạo lại tài khoản admin  -->
             <div class="function-card">
                 <div class="card-header">
-                   <img src="images/icons8-user-60.png" alt="Icon" class="card-icon">
+                    <img src="images/icons8-user-60.png" alt="Icon" class="card-icon">
                     <h3>Tạo lại Admin</h3>
                 </div>
                 <p class="card-description">Tạo lại User Admin khi mất tài khoản gốc.</p>
@@ -57,14 +59,14 @@
             </div>
 
             <!-- Đổ danh sách bệnh nhân  -->
-             <div class="function-card">
+            <div class="function-card">
                 <div class="card-header">
-                   <img src="images/icons8-list-60.png" alt="Icon" class="card-icon">
+                    <img src="images/icons8-list-60.png" alt="Icon" class="card-icon">
                     <h3>Đổ DS bệnh nhân</h3>
                 </div>
                 <p class="card-description">Đổ danh sách bệnh nhân vào DataBase.</p>
                 <div class="card-actions">
-                 <a href="#" class="link-guide" onclick="openDodlGuideModal(); return false;">Hướng dẫn</a>
+                    <a href="#" class="link-guide" onclick="openDodlGuideModal(); return false;">Hướng dẫn</a>
                     <!-- Chuyển sang trang SQL_Server_Connection.html -->
                     <button class="btn btn-primary btn-download" onclick="goToDodlBN()">Đổ dữ liệu</button>
                 </div>
@@ -73,101 +75,123 @@
             <!-- Đổ danh sách thủ thuật   -->
             <div class="function-card">
                 <div class="card-header">
-                   <img src="images/icons8-to-do-list-60.png" alt="Icon" class="card-icon">
+                    <img src="images/icons8-to-do-list-60.png" alt="Icon" class="card-icon">
                     <h3>Đổ DS thủ thuật</h3>
                 </div>
                 <p class="card-description">Đổ danh sách thủ thuật vào DataBase.</p>
                 <div class="card-actions">
                     <a href="#" class="link-guide" onclick="openDoThuThuatGuideModal(); return false;">Hướng dẫn</a>
-                   <button class="btn btn-primary btn-download" onclick="goToDoThuThuat()">Đổ dữ liệu</button>
+                    <button class="btn btn-primary btn-download" onclick="goToDoThuThuat()">Đổ dữ liệu</button>
                 </div>
             </div>
 
-            
-             <!-- Xem lại danh sách User  -->
+
+            <!-- Xem lại danh sách User  -->
             <div class="function-card">
                 <div class="card-header">
-                   <img src="images/icons8-password-window-60.png" alt="Icon" class="card-icon">
+                    <img src="images/icons8-password-window-60.png" alt="Icon" class="card-icon">
                     <h3>Quên mật khẩu </h3>
                 </div>
                 <p class="card-description">Xem lại mật khẩu đã đặt cho tài khoản.</p>
                 <div class="card-actions">
                     <a href="#" class="link-guide" onclick="openUserListGuideModal(); return false;">Hướng dẫn</a>
-                    <button class="btn btn-primary btn-download"  onclick="goToShowPass()">Show Pass</button>
+                    <button class="btn btn-primary btn-download" onclick="goToShowPass()">Show Pass</button>
+                </div>
+            </div>
+
+            <!-- Xem lại danh sách User  -->
+            <div class="function-card">
+                <div class="card-header">
+                    <img src="images/icons8-command-60.png" alt="Icon" class="card-icon">
+                    <h3>Run Stored SQL Online </h3>
+                </div>
+                <p class="card-description">Chạy Stored Procedure trực tuyến.</p>
+                <div class="card-actions">
+                    <a href="#" class="link-guide" onclick="openStored_Procedure(); return false;">Hướng dẫn</a>
+                    <button class="btn btn-primary btn-download" onclick="goToStored_Procedure()">Run Stored</button>
                 </div>
             </div>
 
             <!-- Modal hướng dẫn Xem lại danh sách User -->
-<div id="userListGuideModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
-        <div class="modal-header" style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
-            <img src="images/icons8-password-window-60.png" alt="Icon" class="modal-icon" style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
-            <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;">Hướng dẫn xem lại danh sách User</h2>
-        </div>
+            <div id="userListGuideModal" class="modal-overlay">
+                <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
+                    <div class="modal-header"
+                        style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
+                        <img src="images/icons8-password-window-60.png" alt="Icon" class="modal-icon"
+                            style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
+                        <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;">Hướng dẫn xem lại danh
+                            sách User</h2>
+                    </div>
 
-        <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
+                    <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
 
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
-                <p style="margin: 0; line-height: 1.6;">Công cụ này giúp bạn xem lại toàn bộ danh sách tài khoản người dùng trong hệ thống, bao gồm tên đăng nhập, mật khẩu đã đặt, và quyền hạn. Đặc biệt hữu ích khi cần tra cứu mật khẩu đã quên hoặc kiểm tra thông tin tài khoản.</p>
+                        <div style="margin: 20px 0;">
+                            <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
+                            <p style="margin: 0; line-height: 1.6;">Công cụ này giúp bạn xem lại toàn bộ danh sách tài
+                                khoản người dùng trong hệ thống, bao gồm tên đăng nhập, mật khẩu đã đặt, và quyền hạn.
+                                Đặc biệt hữu ích khi cần tra cứu mật khẩu đã quên hoặc kiểm tra thông tin tài khoản.</p>
+                        </div>
+
+                        <div style="margin: 20px 0;">
+                            <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Thông tin hiển thị</h3>
+                            <p style="margin: 0 0 8px; line-height: 1.6;">
+                                • <strong>Tên đăng nhập:</strong> Username của từng tài khoản<br>
+                                • <strong>Mật khẩu:</strong> Password đã được thiết lập<br>
+                                • <strong>Họ tên:</strong> Tên đầy đủ của người dùng<br>
+                            </p>
+                        </div>
+
+                        <div style="margin: 20px 0;">
+                            <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🔒 Bảo mật & Lưu ý</h3>
+                            <p style="margin: 0; line-height: 1.6;">
+                                • <strong>Chỉ dành cho quản trị viên:</strong> Yêu cầu quyền Admin để sử dụng<br>
+                                • <strong>Bảo mật thông tin:</strong> Không chia sẻ mật khẩu cho người khác<br>
+                                • <strong>Đổi mật khẩu định kỳ:</strong> Nên thay đổi mật khẩu 3-6 tháng/lần<br>
+                                • <strong>Xóa tài khoản cũ:</strong> Vô hiệu hóa tài khoản không còn sử dụng<br>
+                                • <strong>Không screenshot:</strong> Tránh lưu hình ảnh có chứa mật khẩu
+                            </p>
+                        </div>
+
+                        <div style="margin: 20px 0;">
+                            <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Cảnh báo quan trọng</h3>
+                            <p style="margin: 0; line-height: 1.6;">
+                                • Công cụ này hiển thị mật khẩu dạng <strong>văn bản gốc</strong><br>
+                                • <strong>Đóng cửa sổ</strong> ngay sau khi tra xong thông tin<br>
+                                • Không để người khác nhìn thấy màn hình khi đang xem<br>
+                                • Sử dụng trong <strong>môi trường an toàn</strong>, không có camera<br>
+                                • Nếu bị lộ mật khẩu, cần <strong>đổi ngay lập tức</strong>
+                            </p>
+                        </div>
+
+                        <div
+                            style="margin: 20px 0; padding: 12px; background: rgba(255,193,7,0.15); border-left: 3px solid #ffc107; border-radius: 6px;">
+                            <p style="margin: 0; font-size: 13px; line-height: 1.6;">
+                                ⚡ <strong>Lưu ý pháp lý:</strong> Việc truy cập và xem mật khẩu người dùng phải tuân thủ
+                                quy định bảo mật của bệnh viện/phòng khám. Chỉ sử dụng khi có sự đồng ý hoặc theo yêu
+                                cầu công việc hợp pháp.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer"
+                        style="padding: 15px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: flex-end; gap: 15px;">
+                        <button class="btn btn-secondary close-modal" onclick="closeUserListGuideModal()">Đóng</button>
+                    </div>
+                </div>
             </div>
-
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Thông tin hiển thị</h3>
-                <p style="margin: 0 0 8px; line-height: 1.6;">
-                    • <strong>Tên đăng nhập:</strong> Username của từng tài khoản<br>
-                    • <strong>Mật khẩu:</strong> Password đã được thiết lập<br>
-                    • <strong>Họ tên:</strong> Tên đầy đủ của người dùng<br>
-                </p>
-            </div>
-
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🔒 Bảo mật & Lưu ý</h3>
-                <p style="margin: 0; line-height: 1.6;">
-                    • <strong>Chỉ dành cho quản trị viên:</strong> Yêu cầu quyền Admin để sử dụng<br>
-                    • <strong>Bảo mật thông tin:</strong> Không chia sẻ mật khẩu cho người khác<br>
-                    • <strong>Đổi mật khẩu định kỳ:</strong> Nên thay đổi mật khẩu 3-6 tháng/lần<br>
-                    • <strong>Xóa tài khoản cũ:</strong> Vô hiệu hóa tài khoản không còn sử dụng<br>
-                    • <strong>Không screenshot:</strong> Tránh lưu hình ảnh có chứa mật khẩu
-                </p>
-            </div>
-
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Cảnh báo quan trọng</h3>
-                <p style="margin: 0; line-height: 1.6;">
-                    • Công cụ này hiển thị mật khẩu dạng <strong>văn bản gốc</strong><br>
-                    • <strong>Đóng cửa sổ</strong> ngay sau khi tra xong thông tin<br>
-                    • Không để người khác nhìn thấy màn hình khi đang xem<br>
-                    • Sử dụng trong <strong>môi trường an toàn</strong>, không có camera<br>
-                    • Nếu bị lộ mật khẩu, cần <strong>đổi ngay lập tức</strong>
-                </p>
-            </div>
-
-            <div style="margin: 20px 0; padding: 12px; background: rgba(255,193,7,0.15); border-left: 3px solid #ffc107; border-radius: 6px;">
-                <p style="margin: 0; font-size: 13px; line-height: 1.6;">
-                    ⚡ <strong>Lưu ý pháp lý:</strong> Việc truy cập và xem mật khẩu người dùng phải tuân thủ quy định bảo mật của bệnh viện/phòng khám. Chỉ sử dụng khi có sự đồng ý hoặc theo yêu cầu công việc hợp pháp.
-                </p>
-            </div>
-        </div>
-
-        <div class="modal-footer" style="padding: 15px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: flex-end; gap: 15px;">
-            <button class="btn btn-secondary close-modal" onclick="closeUserListGuideModal()">Đóng</button>
-        </div>
-    </div>
-</div>
 
         </div>
     </main>
 
-<main class="dashboard-main-content">
-    <div class="greeting-section">
-        <h3>Tải Video</h3>
+    <main class="dashboard-main-content">
+        <div class="greeting-section">
+            <h3>Tải Video</h3>
         </div>
         <div class="card-grid">
             <!-- Tải video Facebook  -->
             <div class="function-card">
                 <div class="card-header">
-                   <img src="images/icons8-download-60.png" alt="Icon" class="card-icon">
+                    <img src="images/icons8-download-60.png" alt="Icon" class="card-icon">
                     <h3>Tải video Facebook</h3>
                 </div>
                 <p class="card-description">Tải các video từ Facebook.</p>
@@ -176,9 +200,9 @@
                 </div>
             </div>
             <!-- Tải video tiktok   -->
-             <div class="function-card">
+            <div class="function-card">
                 <div class="card-header">
-                   <img src="images/icons8-tiktok-60 (2).png" alt="Icon" class="card-icon">
+                    <img src="images/icons8-tiktok-60 (2).png" alt="Icon" class="card-icon">
                     <h3>Tải video Tiktok</h3>
                 </div>
                 <p class="card-description">Tải các video từ Tiktok.</p>
@@ -188,9 +212,9 @@
             </div>
 
             <!-- Tải video Youtube   -->
-             <div class="function-card">
+            <div class="function-card">
                 <div class="card-header">
-                   <img src="images/icons8-youtube-70.png" alt="Icon" class="card-icon">
+                    <img src="images/icons8-youtube-70.png" alt="Icon" class="card-icon">
                     <h3>Tải video Youtube</h3>
                 </div>
                 <p class="card-description">Tải các video từ Youtube.</p>
@@ -199,183 +223,207 @@
                 </div>
             </div>
         </div>
-</main>
+    </main>
 
 
 
-<!-- Modal hướng dẫn định dạng ngày giờ -->
-<div id="guideModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
-        <div class="modal-header" style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
-            <img src="images/time.png" alt="Icon" class="modal-icon" style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
-            <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;"> Hướng dẫn định dạng ngày giờ</h2>
-        </div>
-
-        <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
-
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
-                <p style="margin: 0; line-height: 1.6;">Công cụ này giúp cài đặt định dạng ngày giờ, ngôn ngữ và vùng miền tiếng Việt cho Windows. Sau khi chạy, hệ thống sẽ hiển thị ngày tháng, giờ và các định dạng số theo chuẩn Việt Nam.</p>
+    <!-- Modal hướng dẫn định dạng ngày giờ -->
+    <div id="guideModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
+            <div class="modal-header"
+                style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
+                <img src="images/time.png" alt="Icon" class="modal-icon"
+                    style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
+                <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;"> Hướng dẫn định dạng ngày giờ
+                </h2>
             </div>
 
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚙️ Các thay đổi được áp dụng</h3>
-                <p style="margin: 0 0 8px; line-height: 1.6;">
-                    • <strong>Định dạng ngày:</strong> dd/MM/yyyy (31/12/2024)<br>
-                    • <strong>Định dạng giờ:</strong> 24 giờ (HH:mm:ss)<br>
-                    • <strong>Ngôn ngữ hiển thị:</strong> Tiếng Việt<br>
-                    • <strong>Vùng miền:</strong> Việt Nam (GeoID: 235)<br>
-                    • <strong>Phân cách thập phân:</strong> Dấu phẩy (,)<br>
-                    • <strong>Phân cách hàng nghìn:</strong> Dấu chấm (.)
-                </p>
+            <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
+                    <p style="margin: 0; line-height: 1.6;">Công cụ này giúp cài đặt định dạng ngày giờ, ngôn ngữ và
+                        vùng miền tiếng Việt cho Windows. Sau khi chạy, hệ thống sẽ hiển thị ngày tháng, giờ và các định
+                        dạng số theo chuẩn Việt Nam.</p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚙️ Các thay đổi được áp dụng</h3>
+                    <p style="margin: 0 0 8px; line-height: 1.6;">
+                        • <strong>Định dạng ngày:</strong> dd/MM/yyyy (31/12/2024)<br>
+                        • <strong>Định dạng giờ:</strong> 24 giờ (HH:mm:ss)<br>
+                        • <strong>Ngôn ngữ hiển thị:</strong> Tiếng Việt<br>
+                        • <strong>Vùng miền:</strong> Việt Nam (GeoID: 235)<br>
+                        • <strong>Phân cách thập phân:</strong> Dấu phẩy (,)<br>
+                        • <strong>Phân cách hàng nghìn:</strong> Dấu chấm (.)
+                    </p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Cách sử dụng</h3>
+                    <p style="margin: 0; line-height: 1.6;">
+                        <strong>Bước 1:</strong> Nhấn nút <strong>"Tải xuống"</strong> để tải file cài đặt<br>
+                        <strong>Bước 2:</strong> Mở thư mục <strong>Downloads</strong><br>
+                        <strong>Bước 3:</strong> <strong>Nhấp đúp</strong> vào file
+                        <code>SetVietnameseLocale.bat</code><br>
+                        <strong>Bước 4:</strong> Khi UAC hỏi quyền, chọn <strong>"Yes"</strong><br>
+                        <strong>Bước 5:</strong> Đợi chương trình chạy (khoảng 10-15 giây)<br>
+                        <strong>Bước 6:</strong> <strong>Khởi động lại máy tính</strong> để hoàn tất
+                    </p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Lưu ý quan trọng</h3>
+                    <p style="margin: 0; line-height: 1.6;">
+                        • Cần quyền <strong>Administrator</strong> để thực hiện<br>
+                        • <strong>Lưu toàn bộ công việc</strong> trước khi chạy<br>
+                        • <strong>Bắt buộc khởi động lại</strong> để cài đặt có hiệu lực<br>
+                        • Áp dụng cho tất cả ứng dụng trên hệ thống<br>
+                        • Không ảnh hưởng đến dữ liệu cá nhân
+                    </p>
+                </div>
+
+                <div
+                    style="margin: 20px 0; padding: 12px; background: rgba(0,194,168,0.1); border-left: 3px solid #00c2a8; border-radius: 6px;">
+                    <p style="margin: 0; font-size: 13px; line-height: 1.6;">
+                        💡 <strong>Mẹo:</strong> Nếu gặp lỗi "không thể chạy script", hãy nhấp chuột phải vào file →
+                        chọn <strong>"Run as administrator"</strong>
+                    </p>
+                </div>
+
             </div>
 
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Cách sử dụng</h3>
-                <p style="margin: 0; line-height: 1.6;">
-                    <strong>Bước 1:</strong> Nhấn nút <strong>"Tải xuống"</strong> để tải file cài đặt<br>
-                    <strong>Bước 2:</strong> Mở thư mục <strong>Downloads</strong><br>
-                    <strong>Bước 3:</strong> <strong>Nhấp đúp</strong> vào file <code>SetVietnameseLocale.bat</code><br>
-                    <strong>Bước 4:</strong> Khi UAC hỏi quyền, chọn <strong>"Yes"</strong><br>
-                    <strong>Bước 5:</strong> Đợi chương trình chạy (khoảng 10-15 giây)<br>
-                    <strong>Bước 6:</strong> <strong>Khởi động lại máy tính</strong> để hoàn tất
-                </p>
+            <div class="modal-footer"
+                style="padding: 15px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: flex-end; gap: 15px;">
+                <button class="btn btn-secondary close-modal" onclick="closeModal()">Đóng</button>
+                <button class="btn btn-primary btn-action-main"
+                    onclick="closeModal(); /* thêm hàm download nếu cần */">Tải xuống ngay</button>
             </div>
-
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Lưu ý quan trọng</h3>
-                <p style="margin: 0; line-height: 1.6;">
-                    • Cần quyền <strong>Administrator</strong> để thực hiện<br>
-                    • <strong>Lưu toàn bộ công việc</strong> trước khi chạy<br>
-                    • <strong>Bắt buộc khởi động lại</strong> để cài đặt có hiệu lực<br>
-                    • Áp dụng cho tất cả ứng dụng trên hệ thống<br>
-                    • Không ảnh hưởng đến dữ liệu cá nhân
-                </p>
-            </div>
-
-            <div style="margin: 20px 0; padding: 12px; background: rgba(0,194,168,0.1); border-left: 3px solid #00c2a8; border-radius: 6px;">
-                <p style="margin: 0; font-size: 13px; line-height: 1.6;">
-                    💡 <strong>Mẹo:</strong> Nếu gặp lỗi "không thể chạy script", hãy nhấp chuột phải vào file → chọn <strong>"Run as administrator"</strong>
-                </p>
-            </div>
-
-        </div>
-
-        <div class="modal-footer" style="padding: 15px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: flex-end; gap: 15px;">
-            <button class="btn btn-secondary close-modal" onclick="closeModal()">Đóng</button>
-            <button class="btn btn-primary btn-action-main" onclick="closeModal(); /* thêm hàm download nếu cần */">Tải xuống ngay</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal hướng dẫn tạo lại Admin -->
-<div id="adminGuideModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
-        <div class="modal-header" style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
-            <img src="images/icons8-user-60.png" alt="Icon" class="modal-icon" style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
-            <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;">Hướng dẫn tạo lại Admin</h2>
-        </div>
-
-        <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
-
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
-                <p style="margin: 0; line-height: 1.6;">Chức năng này giúp bạn tạo lại tài khoản Admin của phần mềm khi bạn bị mất hoặc quên mật khẩu tài khoản quản trị gốc. Điều này đặc biệt hữu ích khi bạn không thể đăng nhập vào hệ thống quản lý.</p>
-            </div>
-
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Khi nào cần sử dụng?</h3>
-                <p style="margin: 0 0 8px; line-height: 1.6;">
-                    • Khi <strong>quên mật khẩu</strong> tài khoản Admin<br>
-                    • Khi tài khoản Admin bị <strong>khóa hoặc vô hiệu hóa</strong><br>
-                    • Khi <strong>mất quyền truy cập</strong> vào hệ thống quản trị<br>
-                    • Khi cần <strong>khôi phục quyền quản trị</strong> ban đầu<br>
-                    • Khi muốn <strong>tạo tài khoản Admin mới</strong> để quản lý
-                </p>
-            </div>
-
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Lưu ý quan trọng</h3>
-                <p style="margin: 0; line-height: 1.6;">
-                    • Tài khoản Admin mới sẽ có <strong>toàn quyền quản trị</strong> phần mềm<br>
-                    • <strong>Lưu mật khẩu</strong> ngay sau khi tạo để tránh mất lại<br>
-                    • Nên <strong>xóa tài khoản cũ</strong> sau khi đã truy cập được hệ thống<br>
-                    • Không ảnh hưởng đến <strong>dữ liệu người dùng</strong> hiện có<br>
-                    • Chỉ tạo lại tài khoản quản trị, không reset dữ liệu
-                </p>
-            </div>
-
-            <div style="margin: 20px 0; padding: 12px; background: rgba(0,194,168,0.1); border-left: 3px solid #00c2a8; border-radius: 6px;">
-                <p style="margin: 0; font-size: 13px; line-height: 1.6;">
-                    💡 <strong>Mẹo bảo mật:</strong> Sử dụng mật khẩu kết hợp chữ hoa, chữ thường, số và ký tự đặc biệt. Ví dụ: <code>Admin@2024#Secure</code>
-                </p>
-            </div>
-
-        </div>
-
-         <div class="modal-footer" style="padding: 15px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: flex-end; gap: 15px;">
-            <button class="btn btn-secondary close-modal" onclick="closeAdminGuideModal()">Đóng</button>
         </div>
     </div>
-</div>
 
- <!-- Modal hướng dẫn Đổ danh sách bệnh nhân -->
-<div id="dodlGuideModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
-        <div class="modal-header" style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
-            <img src="images/icons8-list-60.png" alt="Icon" class="modal-icon" style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
-            <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;">Hướng dẫn đổ danh sách bệnh nhân</h2>
+    <!-- Modal hướng dẫn tạo lại Admin -->
+    <div id="adminGuideModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
+            <div class="modal-header"
+                style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
+                <img src="images/icons8-user-60.png" alt="Icon" class="modal-icon"
+                    style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
+                <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;">Hướng dẫn tạo lại Admin</h2>
+            </div>
+
+            <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
+                    <p style="margin: 0; line-height: 1.6;">Chức năng này giúp bạn tạo lại tài khoản Admin của phần mềm
+                        khi bạn bị mất hoặc quên mật khẩu tài khoản quản trị gốc. Điều này đặc biệt hữu ích khi bạn
+                        không thể đăng nhập vào hệ thống quản lý.</p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Khi nào cần sử dụng?</h3>
+                    <p style="margin: 0 0 8px; line-height: 1.6;">
+                        • Khi <strong>quên mật khẩu</strong> tài khoản Admin<br>
+                        • Khi tài khoản Admin bị <strong>khóa hoặc vô hiệu hóa</strong><br>
+                        • Khi <strong>mất quyền truy cập</strong> vào hệ thống quản trị<br>
+                        • Khi cần <strong>khôi phục quyền quản trị</strong> ban đầu<br>
+                        • Khi muốn <strong>tạo tài khoản Admin mới</strong> để quản lý
+                    </p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Lưu ý quan trọng</h3>
+                    <p style="margin: 0; line-height: 1.6;">
+                        • Tài khoản Admin mới sẽ có <strong>toàn quyền quản trị</strong> phần mềm<br>
+                        • <strong>Lưu mật khẩu</strong> ngay sau khi tạo để tránh mất lại<br>
+                        • Nên <strong>xóa tài khoản cũ</strong> sau khi đã truy cập được hệ thống<br>
+                        • Không ảnh hưởng đến <strong>dữ liệu người dùng</strong> hiện có<br>
+                        • Chỉ tạo lại tài khoản quản trị, không reset dữ liệu
+                    </p>
+                </div>
+
+                <div
+                    style="margin: 20px 0; padding: 12px; background: rgba(0,194,168,0.1); border-left: 3px solid #00c2a8; border-radius: 6px;">
+                    <p style="margin: 0; font-size: 13px; line-height: 1.6;">
+                        💡 <strong>Mẹo bảo mật:</strong> Sử dụng mật khẩu kết hợp chữ hoa, chữ thường, số và ký tự đặc
+                        biệt. Ví dụ: <code>Admin@2024#Secure</code>
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="modal-footer"
+                style="padding: 15px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: flex-end; gap: 15px;">
+                <button class="btn btn-secondary close-modal" onclick="closeAdminGuideModal()">Đóng</button>
+            </div>
         </div>
+    </div>
 
-        <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
-
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
-                <p style="margin: 0; line-height: 1.6;">Nhập toàn bộ danh sách bệnh nhân từ file Excel vào cơ sở dữ liệu SQL Server.</p>
+    <!-- Modal hướng dẫn Đổ danh sách bệnh nhân -->
+    <div id="dodlGuideModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
+            <div class="modal-header"
+                style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
+                <img src="images/icons8-list-60.png" alt="Icon" class="modal-icon"
+                    style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
+                <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;">Hướng dẫn đổ danh sách bệnh
+                    nhân</h2>
             </div>
 
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚙️ Yêu cầu trước khi thực hiện</h3>
-                <p style="margin: 0 0 8px; line-height: 1.6;">
-                    • File Excel mẫu: <strong>DS_BenhNhan.xlsx</strong> (đã được cung cấp)<br>
-                    • SQL Server đang chạy và cho phép kết nối<br>
-                    • Tài khoản SQL có quyền <strong>db_owner</strong> trên database NKS<br>
-                    • Máy tính đã cài .NET Framework 4.7.2 trở lên
-                </p>
+            <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
+                    <p style="margin: 0; line-height: 1.6;">Nhập toàn bộ danh sách bệnh nhân từ file Excel vào cơ sở dữ
+                        liệu SQL Server.</p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚙️ Yêu cầu trước khi thực hiện</h3>
+                    <p style="margin: 0 0 8px; line-height: 1.6;">
+                        • File Excel mẫu: <strong>DS_BenhNhan.xlsx</strong> (đã được cung cấp)<br>
+                        • SQL Server đang chạy và cho phép kết nối<br>
+                        • Tài khoản SQL có quyền <strong>db_owner</strong> trên database NKS<br>
+                        • Máy tính đã cài .NET Framework 4.7.2 trở lên
+                    </p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Các bước thực hiện</h3>
+                    <p style="margin: 0; line-height: 1.6;">
+                        <strong>1.</strong> Nhấn nút <strong>“Đổ dữ liệu”</strong> → chuyển sang trang kết nối<br>
+                        <strong>2.</strong> Nhập thông tin Server, Database, User, Password<br>
+                        <strong>3.</strong> Chọn file Excel <code>DS_BenhNhan.xlsx</code><br>
+                        <strong>4.</strong> Nhấn <strong>“Bắt đầu đổ dữ liệu”</strong><br>
+                        <strong>5.</strong> Đợi thông báo <strong>“Hoàn tất”</strong> (thường 5-30 giây tùy số lượng)
+                    </p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Lưu ý quan trọng</h3>
+                    <p style="margin: 0; line-height: 1.6;">
+                        • Không chỉnh sửa cấu trúc cột trong file Excel mẫu<br>
+                        • Dữ liệu không có <strong> VUI LÒNG ĐÁNH # </strong> để wed tự tính dữ liệu phù hợp<br>
+                        • Sao lưu database trước khi thực hiện (khuyến cáo)<br>
+                        • Chỉ chạy 1 lần cho mỗi đợt cập nhật danh sách
+                    </p>
+                </div>
+
+                <div
+                    style="margin: 20px 0; padding: 12px; background: rgba(0,194,168,0.1); border-left: 3px solid #00c2a8; border-radius: 6px;">
+                    <p style="margin: 0; font-size: 13px; line-height: 1.6;">
+                        💡 <strong>Mẹo:</strong> Nếu gặp lỗi kết nối, kiểm tra SQL Server Configuration Manager → SQL
+                        Server Network Configuration → Protocols → bật TCP/IP và Named Pipes.
+                    </p>
+                </div>
+
             </div>
 
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Các bước thực hiện</h3>
-                <p style="margin: 0; line-height: 1.6;">
-                    <strong>1.</strong> Nhấn nút <strong>“Đổ dữ liệu”</strong> → chuyển sang trang kết nối<br>
-                    <strong>2.</strong> Nhập thông tin Server, Database, User, Password<br>
-                    <strong>3.</strong> Chọn file Excel <code>DS_BenhNhan.xlsx</code><br>
-                    <strong>4.</strong> Nhấn <strong>“Bắt đầu đổ dữ liệu”</strong><br>
-                    <strong>5.</strong> Đợi thông báo <strong>“Hoàn tất”</strong> (thường 5-30 giây tùy số lượng)
-                </p>
-            </div>
-
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Lưu ý quan trọng</h3>
-                <p style="margin: 0; line-height: 1.6;">
-                    • Không chỉnh sửa cấu trúc cột trong file Excel mẫu<br>
-                    • Dữ liệu không có <strong> VUI LÒNG ĐÁNH # </strong> để wed tự tính dữ liệu phù hợp<br>
-                    • Sao lưu database trước khi thực hiện (khuyến cáo)<br>
-                    • Chỉ chạy 1 lần cho mỗi đợt cập nhật danh sách
-                </p>
-            </div>
-
-            <div style="margin: 20px 0; padding: 12px; background: rgba(0,194,168,0.1); border-left: 3px solid #00c2a8; border-radius: 6px;">
-                <p style="margin: 0; font-size: 13px; line-height: 1.6;">
-                    💡 <strong>Mẹo:</strong> Nếu gặp lỗi kết nối, kiểm tra SQL Server Configuration Manager → SQL Server Network Configuration → Protocols → bật TCP/IP và Named Pipes.
-                </p>
-            </div>
-
-        </div>
-
-       <div class="modal-footer" style="padding: 25px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: space-between; align-items: center;">
-  <a href="files/DS_BenhNhan.xlsx" download="DS_BenhNhan.xlsx" target="_blank" class="btn btn-primary"
-   style="background: linear-gradient(135deg, #2d3748, #1a202c);
+            <div class="modal-footer"
+                style="padding: 25px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: space-between; align-items: center;">
+                <a href="files/DS_BenhNhan.xlsx" download="DS_BenhNhan.xlsx" target="_blank" class="btn btn-primary"
+                    style="background: linear-gradient(135deg, #2d3748, #1a202c);
           color: #e2e8f0;
           padding: 11px 24px;
           font-size: 15px;
@@ -389,175 +437,236 @@
           align-items: center;
           gap: 10px;
           transition: all 0.3s ease;"
-   onmouseover="this.style.background='linear-gradient(135deg, #4a5568, #2d3748)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.6)'"
-   onmouseout="this.style.background='linear-gradient(135deg, #2d3748, #1a202c)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.4)'">
-   
-   <span style="font-size: 22px;">↓</span>
-   Tải mẫu Excel
-</a>
+                    onmouseover="this.style.background='linear-gradient(135deg, #4a5568, #2d3748)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.6)'"
+                    onmouseout="this.style.background='linear-gradient(135deg, #2d3748, #1a202c)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.4)'">
 
-    <button class="btn btn-secondary close-modal" onclick="closeDodlGuideModal()"
-            style="padding: 14px 32px; border-radius: 10px; background: #2d3748; color: #e2e8f0; border: 1px solid #4a5568;">
-        Đóng
-    </button>
-</div>
-   
+                    <span style="font-size: 22px;">↓</span>
+                    Tải mẫu Excel
+                </a>
+
+                <button class="btn btn-secondary close-modal" onclick="closeDodlGuideModal()"
+                    style="padding: 14px 32px; border-radius: 10px; background: #2d3748; color: #e2e8f0; border: 1px solid #4a5568;">
+                    Đóng
+                </button>
+            </div>
+
+        </div>
     </div>
-</div>
 
-<!-- Modal hướng dẫn Đổ danh sách thủ thuật -->
-<div id="dothuthuatGuideModal" class="modal-overlay">
+    <!-- Modal hướng dẫn Đổ danh sách thủ thuật -->
+    <div id="dothuthuatGuideModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
+            <div class="modal-header"
+                style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
+                <img src="images/icons8-to-do-list-60.png" alt="Icon" class="modal-icon"
+                    style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
+                <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;">Hướng dẫn đổ danh sách thủ
+                    thuật</h2>
+            </div>
+
+            <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
+                    <p style="margin: 0; line-height: 1.6;">Nhập toàn bộ danh sách thủ thuật từ file Excel vào cơ sở dữ
+                        liệu SQL Server của phần mềm NKS.</p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚙️ Yêu cầu trước khi thực hiện</h3>
+                    <p style="margin: 0 0 8px; line-height: 1.6;">
+                        • File Excel mẫu: <strong>DS_ThuThuat.xlsx</strong> (đã được cung cấp)<br>
+                        • SQL Server đang chạy và cho phép kết nối<br>
+                        • Tài khoản SQL có quyền <strong>db_owner</strong> trên database NKS<br>
+                        • Máy tính đã cài .NET Framework 4.7.2 trở lên <br>
+                        • Sau khi đổ dữ liệu xong sẽ có <strong> Nhóm Thủ Thuật Đổ Dữ Liệu </strong>
+                    </p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Các bước thực hiện</h3>
+                    <p style="margin: 0; line-height: 1.6;">
+                        <strong>1.</strong> Nhấn nút <strong>“Đổ dữ liệu”</strong> → chuyển sang trang kết nối<br>
+                        <strong>2.</strong> Nhập thông tin Server, Database, User, Password<br>
+                        <strong>3.</strong> Chọn file Excel <code>DS_ThuThuat.xlsx</code><br>
+                        <strong>4. <strong> Dữ liệu không có vui lòng đánh # để web tự tính dữ liệu phù hợp<br>
+                                <strong>5.</strong> Nhấn <strong>“Bắt đầu đổ dữ liệu”</strong><br>
+                                <strong>6.</strong> Đợi thông báo <strong>“Hoàn tất”</strong>
+                    </p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Lưu ý quan trọng</h3>
+                    <p style="margin: 0; line-height: 1.6;">
+                        • Không thay đổi tên cột hoặc cấu trúc file mẫu<br>
+                        • Sao lưu database trước khi thực hiện<br>
+                        • Chỉ đổ dữ liệu 1 lần cho mỗi đợt cập nhật<br>
+                        • Nếu đã có dữ liệu cũ, nên xóa bảng thủ thuật trước khi đổ mới
+                    </p>
+                </div>
+
+                <div
+                    style="margin: 20px 0; padding: 12px; background: rgba(0,194,168,0.1); border-left: 3px solid #00c2a8; border-radius: 6px;">
+                    <p style="margin: 0; font-size: 13px; line-height: 1.6;">
+                        💡 <strong>Mẹo:</strong> Nếu lỗi kết nối, kiểm tra SQL Server Configuration Manager → bật TCP/IP
+                        và Named Pipes.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="modal-footer"
+                style="padding: 25px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: space-between; align-items: center;">
+                <a href="files/DS_ThuThuat.xlsx" download="DS_ThuThuat.xlsx" target="_blank" class="btn btn-primary"
+                    style="background: linear-gradient(135deg, #2d3748, #1a202c); color: #e2e8f0; padding: 11px 24px; font-size: 15px; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.6); border: 1px solid #4a5568; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.4); text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease;"
+                    onmouseover="this.style.background='linear-gradient(135deg, #4a5568, #2d3748)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.6)'"
+                    onmouseout="this.style.background='linear-gradient(135deg, #2d3748, #1a202c)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.4)'">
+                    <span style="font-size: 22px;">↓</span> Tải mẫu Excel
+                </a>
+                <button class="btn btn-secondary close-modal" onclick="closeDoThuThuatGuideModal()"
+                    style="padding: 14px 32px; border-radius: 10px; background: #2d3748; color: #e2e8f0; border: 1px solid #4a5568;">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal hướng dẫn chạy Stored Procedure trực tuyến cho SQL Server -->
+<div id="spGuideModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 700px; background-color: #171c26;">
         <div class="modal-header" style="background-color: #1c222e; border-bottom: 1px solid #2e3547; padding: 20px 30px; display: flex; align-items: center;">
-            <img src="images/icons8-to-do-list-60.png" alt="Icon" class="modal-icon" style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
-            <h2 style="color: white; font-size: 1.5em; font-weight: 600; margin: 0;">Hướng dẫn đổ danh sách thủ thuật</h2>
+            <img src="images/icons8-command-60.png" alt="Icon" class="modal-icon" style="width: 36px; height: 36px; margin-right: 15px; object-fit: contain;">
+            <h2 style="color: white; font-size: 1.5em; font-weight: normal; margin: 0;">Hướng dẫn chạy Stored Procedure</h2>
         </div>
 
         <div class="modal-body" style="padding: 30px; color: #e0e0e0;">
 
             <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">🎯 Mục đích</h3>
-                <p style="margin: 0; line-height: 1.6;">Nhập toàn bộ danh sách thủ thuật từ file Excel vào cơ sở dữ liệu SQL Server của phần mềm NKS.</p>
+                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8; font-weight: normal;">🎯 Mục đích</h3>
+                <p style="margin: 0; line-height: 1.6; font-weight: normal;">Hướng dẫn thực thi Stored Procedure trên SQL Server trực tuyến Online.</p>
             </div>
 
             <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚙️ Yêu cầu trước khi thực hiện</h3>
-                <p style="margin: 0 0 8px; line-height: 1.6;">
-                    • File Excel mẫu: <strong>DS_ThuThuat.xlsx</strong> (đã được cung cấp)<br>
-                    • SQL Server đang chạy và cho phép kết nối<br>
-                    • Tài khoản SQL có quyền <strong>db_owner</strong> trên database NKS<br>
-                    • Máy tính đã cài .NET Framework 4.7.2 trở lên <br>
-                    • Sau khi đổ dữ liệu xong sẽ có <strong> Nhóm Thủ Thuật Đổ Dữ Liệu </strong>
+                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8; font-weight: normal;">📋 Khi nào cần sử dụng?</h3>
+                <p style="margin: 0 0 8px; line-height: 1.6; font-weight: normal;">
+                    • Khi cần kiểm tra nhanh Stored Procedure<br>
+                    • Khi không có quyền cài đặt SSMS trên máy<br>
+                    • Khi làm việc từ xa hoặc trên thiết bị khác<br>
+                    • Khi cần chạy thử trước khi triển khai<br>
+                    • Khi hỗ trợ khách hàng thực thi SP
                 </p>
             </div>
 
             <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">📋 Các bước thực hiện</h3>
-                <p style="margin: 0; line-height: 1.6;">
-                    <strong>1.</strong> Nhấn nút <strong>“Đổ dữ liệu”</strong> → chuyển sang trang kết nối<br>
-                    <strong>2.</strong> Nhập thông tin Server, Database, User, Password<br>
-                    <strong>3.</strong> Chọn file Excel <code>DS_ThuThuat.xlsx</code><br>
-                    <strong>4. <strong> Dữ liệu không có vui lòng đánh # để web tự tính dữ liệu phù hợp<br>
-                    <strong>5.</strong> Nhấn <strong>“Bắt đầu đổ dữ liệu”</strong><br>
-                    <strong>6.</strong> Đợi thông báo <strong>“Hoàn tất”</strong>
-                </p>
-            </div>
-
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8;">⚠️ Lưu ý quan trọng</h3>
-                <p style="margin: 0; line-height: 1.6;">
-                    • Không thay đổi tên cột hoặc cấu trúc file mẫu<br>
-                    • Sao lưu database trước khi thực hiện<br>
-                    • Chỉ đổ dữ liệu 1 lần cho mỗi đợt cập nhật<br>
-                    • Nếu đã có dữ liệu cũ, nên xóa bảng thủ thuật trước khi đổ mới
+                <h3 style="font-size: 16px; margin: 16px 0 8px; color: #00c2a8; font-weight: normal;">⚠️ Lưu ý quan trọng</h3>
+                <p style="margin: 0; line-height: 1.6; font-weight: normal;">
+                    • Cần có chuỗi kết nối và quyền thực thi SP<br>
+                    • Không sử dụng công cụ online cho dữ liệu nhạy cảm<br>
+                    • Kiểm tra kỹ tham số đầu vào trước khi chạy<br>
+                    • Một số công cụ online có giới hạn thời gian thực thi<br>
+                    • Luôn sao lưu dữ liệu trước khi chạy SP thay đổi dữ liệu
                 </p>
             </div>
 
             <div style="margin: 20px 0; padding: 12px; background: rgba(0,194,168,0.1); border-left: 3px solid #00c2a8; border-radius: 6px;">
-                <p style="margin: 0; font-size: 13px; line-height: 1.6;">
-                    💡 <strong>Mẹo:</strong> Nếu lỗi kết nối, kiểm tra SQL Server Configuration Manager → bật TCP/IP và Named Pipes.
+                <p style="margin: 0; font-size: 13px; line-height: 1.6; font-weight: normal;">
+                    💡 Công cụ khuyến nghị: Azure Data Studio (web version), SQL Fiddle, db<>fiddle, hoặc Adminer với kết nối SQL Server.
                 </p>
             </div>
 
         </div>
 
-        <div class="modal-footer" style="padding: 25px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: space-between; align-items: center;">
-            <a href="files/DS_ThuThuat.xlsx" download="DS_ThuThuat.xlsx" target="_blank" class="btn btn-primary"
-               style="background: linear-gradient(135deg, #2d3748, #1a202c); color: #e2e8f0; padding: 11px 24px; font-size: 15px; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.6); border: 1px solid #4a5568; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.4); text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease;"
-               onmouseover="this.style.background='linear-gradient(135deg, #4a5568, #2d3748)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.6)'"
-               onmouseout="this.style.background='linear-gradient(135deg, #2d3748, #1a202c)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.4)'">
-                <span style="font-size: 22px;">↓</span> Tải mẫu Excel
-            </a>
-            <button class="btn btn-secondary close-modal" onclick="closeDoThuThuatGuideModal()"
-                    style="padding: 14px 32px; border-radius: 10px; background: #2d3748; color: #e2e8f0; border: 1px solid #4a5568;">
-                Đóng
-            </button>
+        <div class="modal-footer" style="padding: 15px 30px; background-color: #1c222e; border-top: 1px solid #2e3547; display: flex; justify-content: flex-end; gap: 15px;">
+            <button class="btn btn-secondary close-modal" onclick="closeStored_Procedure()">Đóng</button>
         </div>
     </div>
 </div>
 
+    <!-- Modal tải video Facebook – Kết quả hiển thị ngay dưới nút Download -->
+    <div id="fbDownloadModal" class="modal-overlay">
+        <div class="modal-content"
+            style="position:relative; max-width:600px; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.15);">
 
-<!-- Modal tải video Facebook – Kết quả hiển thị ngay dưới nút Download -->
-<div id="fbDownloadModal" class="modal-overlay">
-    <div class="modal-content" style="position:relative; max-width:600px; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.15);">
-        
-        <!-- Nút đóng (X) -->
-        <button onclick="closeToDoDownloadFB()" 
-            style="position:absolute; top:16px; right:20px; z-index:10; width:36px; height:36px; background:#fff; border:none; border-radius:50%; font-size:24px; color:#888; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1); transition:all 0.2s;">
-            ×
-        </button>
+            <!-- Nút đóng (X) -->
+            <button onclick="closeToDoDownloadFB()"
+                style="position:absolute; top:16px; right:20px; z-index:10; width:36px; height:36px; background:#fff; border:none; border-radius:50%; font-size:24px; color:#888; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1); transition:all 0.2s;">
+                ×
+            </button>
 
-        <!-- Header -->
-        <div style="padding:30px 40px 20px; text-align:center;">
-            <h2 style="font-size:28px; font-weight:700; color:#1a1a1a; margin:0 0 8px;">Download Facebook Videos</h2>
-            <p style="color:#666; margin:0 0 30px; font-size:15px;">Enter a Facebook video URL and select your preferred quality</p>
-        </div>
-
-        <!-- Form chính (input + nút + kết quả) -->
-        <div style="padding:0 40px 40px;">
-
-            <!-- Input URL -->
-            <div style="margin-bottom:20px;">
-                <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">Facebook Video URL</label>
-                <input type="text" id="fbVideoUrl" placeholder="https://www.facebook.com/watch?v=..."
-                    style="width:100%; padding:16px; border-radius:12px; border:1px solid #ddd; background:#f9f9f9; font-size:16px; color:#333;"
-                    onkeypress="if(event.key==='Enter') fetchFBInfo()">
+            <!-- Header -->
+            <div style="padding:30px 40px 20px; text-align:center;">
+                <h2 style="font-size:28px; font-weight:700; color:#1a1a1a; margin:0 0 8px;">Download Facebook Videos
+                </h2>
+                <p style="color:#666; margin:0 0 30px; font-size:15px;">Enter a Facebook video URL and select your
+                    preferred quality</p>
             </div>
 
-            <!-- Nút Download đẹp + hiệu ứng -->
-            <button onclick="fetchFBInfo()"
-                style="width:100%; padding:18px; background:#1877f2; color:#fff; font-size:18px; font-weight:600; border:none; border-radius:12px; cursor:pointer; 
+            <!-- Form chính (input + nút + kết quả) -->
+            <div style="padding:0 40px 40px;">
+
+                <!-- Input URL -->
+                <div style="margin-bottom:20px;">
+                    <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">Facebook Video
+                        URL</label>
+                    <input type="text" id="fbVideoUrl" placeholder="https://www.facebook.com/watch?v=..."
+                        style="width:100%; padding:16px; border-radius:12px; border:1px solid #ddd; background:#f9f9f9; font-size:16px; color:#333;"
+                        onkeypress="if(event.key==='Enter') fetchFBInfo()">
+                </div>
+
+                <!-- Nút Download đẹp + hiệu ứng -->
+                <button onclick="fetchFBInfo()"
+                    style="width:100%; padding:18px; background:#1877f2; color:#fff; font-size:18px; font-weight:600; border:none; border-radius:12px; cursor:pointer; 
                        box-shadow:0 4px 15px rgba(24,119,242,0.4); transition:all 0.3s ease; position:relative; overflow:hidden;"
-                onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 25px rgba(24,119,242,0.5)'"
-                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(24,119,242,0.4)'">
-                Download Video
-            </button>
+                    onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 25px rgba(24,119,242,0.5)'"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(24,119,242,0.4)'">
+                    Download Video
+                </button>
 
-            <!-- Khu vực hiển thị kết quả – ngay bên dưới nút Download -->
-            <div id="fbVideoInfo" style="margin-top:30px; display:none;">
-                <!-- Nội dung sẽ được JS chèn vào đây -->
+                <!-- Khu vực hiển thị kết quả – ngay bên dưới nút Download -->
+                <div id="fbVideoInfo" style="margin-top:30px; display:none;">
+                    <!-- Nội dung sẽ được JS chèn vào đây -->
+                </div>
             </div>
         </div>
     </div>
-</div>
-        <!-- // JavaScript để xử lý tải video Facebook -->
+    <!-- // JavaScript để xử lý tải video Facebook -->
     <script>
-async function fetchFBInfo() {
-    const url = document.getElementById('fbVideoUrl').value.trim();
-    if (!url) return alert('Vui lòng nhập link video Facebook!');
+        async function fetchFBInfo() {
+            const url = document.getElementById('fbVideoUrl').value.trim();
+            if (!url) return alert('Vui lòng nhập link video Facebook!');
 
-    const quality = document.querySelector('input[name="quality"]:checked')?.value || 'best';
-    const btn = document.querySelector('button[onclick="fetchFBInfo()"]');
-    const oldText = btn.innerHTML;
+            const quality = document.querySelector('input[name="quality"]:checked')?.value || 'best';
+            const btn = document.querySelector('button[onclick="fetchFBInfo()"]');
+            const oldText = btn.innerHTML;
 
-    btn.disabled = true;
-    btn.innerHTML = 'Đang xử lý…';
+            btn.disabled = true;
+            btn.innerHTML = 'Đang xử lý…';
 
-    const resultDiv = document.getElementById('fbVideoInfo');
-    resultDiv.style.display = 'block';
-    resultDiv.innerHTML = `<div style="text-align:center;padding:50px 0;"><div style="width:56px;height:56px;border:6px solid #1877f2;border-top-color:transparent;border-radius:50%;margin:0 auto 20px;animation:spin 1s linear infinite;"></div><p>Đang lấy video…</p></div>`;
+            const resultDiv = document.getElementById('fbVideoInfo');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `<div style="text-align:center;padding:50px 0;"><div style="width:56px;height:56px;border:6px solid #1877f2;border-top-color:transparent;border-radius:50%;margin:0 auto 20px;animation:spin 1s linear infinite;"></div><p>Đang lấy video…</p></div>`;
 
-    try {
-        const res = await fetch('https://facebook-video-download-api.onrender.com/download', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url, quality })
-        });
+            try {
+                const res = await fetch('https://facebook-video-download-api.onrender.com/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, quality })
+                });
 
-        const data = await res.json();
-        btn.disabled = false;
-        btn.innerHTML = oldText;
+                const data = await res.json();
+                btn.disabled = false;
+                btn.innerHTML = oldText;
 
-        if (data.status !== 'success' || !data.video_info || !data.download_url) {
-            resultDiv.innerHTML = `<div style="background:#ffebee;color:#c62828;padding:20px;border-radius:12px;text-align:center;">Không thể tải video này.<br><small>${data.message || 'Link không hợp lệ hoặc video bị hạn chế.'}</small></div>`;
-            return;
-        }
+                if (data.status !== 'success' || !data.video_info || !data.download_url) {
+                    resultDiv.innerHTML = `<div style="background:#ffebee;color:#c62828;padding:20px;border-radius:12px;text-align:center;">Không thể tải video này.<br><small>${data.message || 'Link không hợp lệ hoặc video bị hạn chế.'}</small></div>`;
+                    return;
+                }
 
-        const v = data.video_info;
-        const date = v.upload_date ? v.upload_date.replace(/(\d{4})(\d{2})(\d{2})/, '$3/$2/$1') : '';
-        const safeTitle = (v.title || 'Facebook_Video').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 60);
+                const v = data.video_info;
+                const date = v.upload_date ? v.upload_date.replace(/(\d{4})(\d{2})(\d{2})/, '$3/$2/$1') : '';
+                const safeTitle = (v.title || 'Facebook_Video').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 60);
 
-        resultDiv.innerHTML = `
+                resultDiv.innerHTML = `
             <div style="background:#f8f9fa;border-radius:16px;padding:24px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
                 ${v.thumbnail ? `<img src="${v.thumbnail}" style="width:100%;height:320px;object-fit:cover;border-radius:16px;margin-bottom:20px;box-shadow:0 12px 30px rgba(0,0,0,0.2);background:#000;" alt="Thumbnail">` : ''}
 
@@ -595,197 +704,195 @@ async function fetchFBInfo() {
                 </div>
             </div>`;
 
-        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-    } catch (error) {
-        btn.disabled = false;
-        btn.innerHTML = oldText;
-        resultDiv.innerHTML = `<div style="background:#ffebee;color:#c62828;padding:20px;border-radius:12px;text-align:center;">Lỗi kết nối server. Thử lại sau.</div>`;
-    }
-}
+            } catch (error) {
+                btn.disabled = false;
+                btn.innerHTML = oldText;
+                resultDiv.innerHTML = `<div style="background:#ffebee;color:#c62828;padding:20px;border-radius:12px;text-align:center;">Lỗi kết nối server. Thử lại sau.</div>`;
+            }
+        }
 
-// Tải video + hiện thông báo đẹp
-async function downloadVideo(videoUrl, filename) {
-    const btn = document.getElementById('downloadBtnMain');
-    const toast = document.getElementById('downloadSuccessToast');
+        // Tải video + hiện thông báo đẹp
+        async function downloadVideo(videoUrl, filename) {
+            const btn = document.getElementById('downloadBtnMain');
+            const toast = document.getElementById('downloadSuccessToast');
 
-    btn.disabled = true;
-    btn.innerHTML = 'Đang tải…';
+            btn.disabled = true;
+            btn.innerHTML = 'Đang tải…';
 
-    try {
-        const response = await fetch(videoUrl);
-        if (!response.ok) throw new Error();
+            try {
+                const response = await fetch(videoUrl);
+                if (!response.ok) throw new Error();
 
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
 
-        // Hiện thông báo thành công đẹp
-        btn.style.background = '#1e7e34';
-        btn.innerHTML = 'Đã tải xong!';
-        toast.style.display = 'flex';
+                // Hiện thông báo thành công đẹp
+                btn.style.background = '#1e7e34';
+                btn.innerHTML = 'Đã tải xong!';
+                toast.style.display = 'flex';
 
-        // Tự ẩn sau 4 giây
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(-10px)';
-            toast.style.transition = 'all 0.5s ease';
-            setTimeout(() => toast.style.display = 'none', 500);
-        }, 4000);
+                // Tự ẩn sau 4 giây
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-10px)';
+                    toast.style.transition = 'all 0.5s ease';
+                    setTimeout(() => toast.style.display = 'none', 500);
+                }, 4000);
 
-    } catch (err) {
-        alert('Không thể tải video. Hãy thử chuột phải → Lưu liên kết dưới dạng...');
-        btn.disabled = false;
-        btn.innerHTML = `Tải xuống ngay (${quality?.toUpperCase() || 'BEST'})`;
-    }
-}
+            } catch (err) {
+                alert('Không thể tải video. Hãy thử chuột phải → Lưu liên kết dưới dạng...');
+                btn.disabled = false;
+                btn.innerHTML = `Tải xuống ngay (${quality?.toUpperCase() || 'BEST'})`;
+            }
+        }
 
-function resetForm() {
-    document.getElementById('fbVideoUrl').value = '';
-    document.getElementById('fbVideoInfo').style.display = 'none';
-    document.getElementById('fbVideoUrl').focus();
-}
+        function resetForm() {
+            document.getElementById('fbVideoUrl').value = '';
+            document.getElementById('fbVideoInfo').style.display = 'none';
+            document.getElementById('fbVideoUrl').focus();
+        }
 
-function closeToDoDownloadFB() {
-    document.getElementById('fbDownloadModal').style.display = 'none';
-}
+        function closeToDoDownloadFB() {
+            document.getElementById('fbDownloadModal').style.display = 'none';
+        }
 
-// Animation
-document.head.insertAdjacentHTML('beforeend', `
+        // Animation
+        document.head.insertAdjacentHTML('beforeend', `
 <style>
     @keyframes spin { to { transform: rotate(360deg); } }
     #downloadSuccessToast { transition: all 0.5s ease; }
 </style>`);
     </script>
-        <!-- JS tạo hiệu ứng ripple chính xác tại vị trí click -->
+    <!-- JS tạo hiệu ứng ripple chính xác tại vị trí click -->
     <script>
-document.querySelector('button[onclick="fetchFBInfo()"]').addEventListener('click', function(e) {
-    let button = e.currentTarget;
-    let ripple = button.querySelector('span');
-    if (!ripple) {
-        ripple = document.createElement('span');
-        button.appendChild(ripple);
-    }
-    
-    let x = e.clientX - button.getBoundingClientRect().left;
-    let y = e.clientY - button.getBoundingClientRect().top;
-    
-    ripple.style.width = ripple.style.height = '300px';
-    ripple.style.left = x + 'px';
-    ripple.style.top = y + 'px';
-    ripple.classList.remove('animate');
-    void ripple.offsetWidth; // trigger reflow
-    ripple.classList.add('animate');
-});
+        document.querySelector('button[onclick="fetchFBInfo()"]').addEventListener('click', function (e) {
+            let button = e.currentTarget;
+            let ripple = button.querySelector('span');
+            if (!ripple) {
+                ripple = document.createElement('span');
+                button.appendChild(ripple);
+            }
+
+            let x = e.clientX - button.getBoundingClientRect().left;
+            let y = e.clientY - button.getBoundingClientRect().top;
+
+            ripple.style.width = ripple.style.height = '300px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.classList.remove('animate');
+            void ripple.offsetWidth; // trigger reflow
+            ripple.classList.add('animate');
+        });
     </script>
-        <!-- //Các xử lý khác  -->
-   <script>
- // Modal Youtube
-    // function OpengoToDoDownloadYTB() {
-    //     document.getElementById('youtubeDownloadModal').style.display = 'flex';
-    // }
-    //  function closeToDoDownloadYTB() {
-    //     document.getElementById('youtubeDownloadModal').style.display = 'none';
-    // }
-
-    //  // Modal tiktok
-    // function OpengoToDoDownloadTikTok() {
-    //     document.getElementById('tiktokDownloadModal').style.display = 'flex';
-    // }
-    //  function closeToDoDownloadTikTok() {
-    //     document.getElementById('tiktokDownloadModal').style.display = 'none';
-    // }
-function OpengoToDoDownloadYTB() {
-        window.location.href = "Youtube_Download.html"; // hoặc trang tương ứng
-    }
-
-
-function OpengoToDoDownloadTikTok() {
-        window.location.href = "Video_TikTok.html"; // hoặc trang tương ứng
-    }
-
-     // Modal FB
-    function OpengoToDoDownloadFB() {
-        document.getElementById('fbDownloadModal').style.display = 'flex';
-    }
-     function closeToDoDownloadFB() {
-        document.getElementById('fbDownloadModal').style.display = 'none';
-    }
-
-    function goToDoThuThuat() {
-    window.location.href = "DoDL_ThuThuat.html"; // hoặc trang tương ứng
-}
-    // Modal Đổ danh sách thủ thuật
-    function openDoThuThuatGuideModal() {
-        document.getElementById('dothuthuatGuideModal').style.display = 'flex';
-    }
-    
-    function closeDoThuThuatGuideModal() {
-        document.getElementById('dothuthuatGuideModal').style.display = 'none';
-    }
-
-    // === Modal Định dạng ngày giờ ===
-    function openGuideModal() {
-        document.getElementById('guideModal').style.display = 'flex';
-    }
-    
-    function closeModal() {
-        document.getElementById('guideModal').style.display = 'none';
-    }
-
-    // === Modal Tạo lại Admin ===
-    function openAdminGuideModal() {
-        document.getElementById('adminGuideModal').style.display = 'flex';
-    }
-    
-    function closeAdminGuideModal() {
-        document.getElementById('adminGuideModal').style.display = 'none';
-    }
-
-    // === Modal Đổ danh sách bệnh nhân ===
-    function openDodlGuideModal() {
-        document.getElementById('dodlGuideModal').style.display = 'flex';
-    }
-    
-    function closeDodlGuideModal() {
-        document.getElementById('dodlGuideModal').style.display = 'none';
-    }
-
-    // === Modal Xem lại danh sách User ===
-    function openUserListGuideModal() {
-        document.getElementById('userListGuideModal').style.display = 'flex';
-    }
-    
-    function closeUserListGuideModal() {
-        document.getElementById('userListGuideModal').style.display = 'none';
-    }
-    
-    // Đóng khi click bên ngoài modal
-    window.addEventListener('click', function(e) {
-        if (e.target.classList.contains('modal-overlay')) {
-            e.target.style.display = 'none';
+    <!-- //Các xử lý khác  -->
+    <script>
+        function goToStored_Procedure() {
+            window.location.href = "Stored_Procedure.html"; // hoặc trang tương ứng
         }
-    });
 
-    // Chuyển trang
-    function goToCreateAdminPage() {
-        window.location.href = "SQL_Server_Connection.html";
+    // Modal FB
+    function openStored_Procedure() {
+        document.getElementById('spGuideModal').style.display = 'flex';
     }
-    
-    function goToDodlBN() {
-        window.location.href = "DoDL_BenhNhan.html";
+     function closeStored_Procedure() {
+        document.getElementById('spGuideModal').style.display = 'none';
     }
-    function goToShowPass() {
-        window.location.href = "Show_Pass.html";
-    }
-   </script>
+
+        function OpengoToDoDownloadYTB() {
+            window.location.href = "Youtube_Download.html"; // hoặc trang tương ứng
+        }
+
+
+        function OpengoToDoDownloadTikTok() {
+            window.location.href = "Video_TikTok.html"; // hoặc trang tương ứng
+        }
+
+        // Modal FB
+        function OpengoToDoDownloadFB() {
+            document.getElementById('fbDownloadModal').style.display = 'flex';
+        }
+        function closeToDoDownloadFB() {
+            document.getElementById('fbDownloadModal').style.display = 'none';
+        }
+
+        function goToDoThuThuat() {
+            window.location.href = "DoDL_ThuThuat.html"; // hoặc trang tương ứng
+        }
+        // Modal Đổ danh sách thủ thuật
+        function openDoThuThuatGuideModal() {
+            document.getElementById('dothuthuatGuideModal').style.display = 'flex';
+        }
+
+        function closeDoThuThuatGuideModal() {
+            document.getElementById('dothuthuatGuideModal').style.display = 'none';
+        }
+
+        // === Modal Định dạng ngày giờ ===
+        function openGuideModal() {
+            document.getElementById('guideModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('guideModal').style.display = 'none';
+        }
+
+        // === Modal Tạo lại Admin ===
+        function openAdminGuideModal() {
+            document.getElementById('adminGuideModal').style.display = 'flex';
+        }
+
+        function closeAdminGuideModal() {
+            document.getElementById('adminGuideModal').style.display = 'none';
+        }
+
+        // === Modal Đổ danh sách bệnh nhân ===
+        function openDodlGuideModal() {
+            document.getElementById('dodlGuideModal').style.display = 'flex';
+        }
+
+        function closeDodlGuideModal() {
+            document.getElementById('dodlGuideModal').style.display = 'none';
+        }
+
+        // === Modal Xem lại danh sách User ===
+        function openUserListGuideModal() {
+            document.getElementById('userListGuideModal').style.display = 'flex';
+        }
+
+        function closeUserListGuideModal() {
+            document.getElementById('userListGuideModal').style.display = 'none';
+        }
+
+        // Đóng khi click bên ngoài modal
+        window.addEventListener('click', function (e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        // Chuyển trang
+        function goToCreateAdminPage() {
+            window.location.href = "SQL_Server_Connection.html";
+        }
+
+        function goToDodlBN() {
+            window.location.href = "DoDL_BenhNhan.html";
+        }
+        function goToShowPass() {
+            window.location.href = "Show_Pass.html";
+        }
+    </script>
     <script src="dashboard.js"></script>
 </body>
+
 </html>

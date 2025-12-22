@@ -473,6 +473,66 @@ app.post('/api/import-thuthuat', async (req, res) => {
     }
 });
 
+// Sửa API /api/execute-sql trong index.js
+app.post('/api/execute-sql', async (req, res) => {
+    const { serverName, databaseName, username, password, useWindowAuth = false, sql: query } = req.body;
+
+    if (!serverName || !databaseName) {
+        return res.status(400).json({ success: false, message: 'Thiếu Server Name hoặc Database Name' });
+    }
+
+    if (!query || typeof query !== 'string') {
+        return res.status(400).json({ success: false, message: 'Thiếu lệnh SQL' });
+    }
+
+    let pool = null;
+
+    try {
+        const config = {
+            server: serverName,
+            database: databaseName,
+            options: {
+                encrypt: false,
+                trustServerCertificate: true,
+                cryptoCredentialsDetails: {
+                    minVersion: 'TLSv1'  // Cho phép TLS 1.0/1.1 để kết nối với server cũ
+                },
+                connectTimeout: 15000,
+                requestTimeout: 60000
+            }
+        };
+
+        if (!useWindowAuth && username && password) {
+            config.authentication = {
+                type: 'default',
+                options: {
+                    userName: username,
+                    password: password
+                }
+            };
+        }
+
+        pool = new sql.ConnectionPool(config);
+        await pool.connect();
+
+        const result = await pool.request().query(query);
+
+        let output = {};
+        if (result.recordsets && result.recordsets.length > 0) {
+            output.recordsets = result.recordsets;
+        }
+        output.rowsAffected = result.rowsAffected;
+
+        res.json({ success: true, result: output });
+
+    } catch (error) {
+        console.error('Lỗi thực thi SQL:', error.message);
+        res.status(500).json({ success: false, message: error.message || 'Lỗi thực thi lệnh SQL' });
+    } finally {
+        if (pool) await pool.close().catch(() => {});
+    }
+});
+
 // === HEALTH & ERROR ===
 app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Server chạy tốt!', time: new Date().toLocaleString('vi-VN') }));
 app.use((req, res) => res.status(404).json({ success: false, message: 'Endpoint không tồn tại' }));
@@ -483,9 +543,9 @@ app.use((err, req, res, next) => {
 // ========== KHỞI ĐỘNG SERVER ==========
 app.listen(PORT, () => {
     console.log(`Server đang chạy tại: http://localhost:${PORT}`);
-    console.log(`Health check: http://localhost:${PORT}/api/health`);
-    console.log(`API Import: POST http://localhost:${PORT}/api/import-patients`);
-    console.log(`API hiển thị mật khẩu: POST http://localhost:${PORT}/api/show-passwords`);
-    console.log(`API tạo nhóm: POST /api/create-thuthuat-group`);
-    console.log(`API import thủ thuật: POST /api/import-thuthuat`);
+    // console.log(`Health check: http://localhost:${PORT}/api/health`);
+    // console.log(`API Import: POST http://localhost:${PORT}/api/import-patients`);
+    // console.log(`API hiển thị mật khẩu: POST http://localhost:${PORT}/api/show-passwords`);
+    // console.log(`API tạo nhóm: POST /api/create-thuthuat-group`);
+    // console.log(`API import thủ thuật: POST /api/import-thuthuat`);
 });

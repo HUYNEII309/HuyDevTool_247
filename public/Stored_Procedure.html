@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết nối SQL Server</title>
+    <link rel="icon" href="images/apache_orc_logo_icon_167862.png" type="image/x-icon">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 40%, #12005e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('images/234.png') center/cover no-repeat fixed;
+            opacity: 0.8;
+        }
+
+        .wrapper {
+            width: 95%;
+            max-width: 1400px;
+        }
+
+        .container, .execute-panel {
+            background: rgba(30, 30, 40, 0.95);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(100, 70, 200, 0.3);
+            position: relative;
+        }
+
+        .container { width: 520px; margin: 0 auto; }
+        .execute-panel { display: none; width: 100%; max-width: 1400px; margin: 0 auto; }
+
+        .connected .container { display: none; }
+        .connected .execute-panel { display: block; }
+
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            width: 36px;
+            height: 36px;
+            background: rgba(244, 67, 54, 0.2);
+            border: none;
+            border-radius: 50%;
+            color: #ef5350;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(244, 67, 54, 0.4);
+            transform: scale(1.1);
+        }
+
+        h2, h3 { color: #64b5f6; text-align: center; margin-bottom: 8px; }
+        h2 { display: flex; align-items: center; justify-content: center; gap: 10px; }
+        h2 img { width: 36px; height: 36px; }
+
+        p.description { color: #bbb; font-size: 14px; text-align: center; margin-bottom: 30px; }
+
+        .input-group { position: relative; margin-bottom: 18px; }
+        .input-group img {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px 14px 14px 44px;
+            background: rgba(50, 50, 70, 0.8);
+            border: 1px solid rgba(100, 100, 150, 0.4);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        textarea {
+            padding: 14px;
+            min-height: 180px;
+            resize: vertical;
+            font-family: monospace;
+            field-sizing: content;
+            max-height: 500px;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #64b5f6;
+            box-shadow: 0 0 0 3px rgba(100, 180, 246, 0.2);
+        }
+
+        .note {
+            background: rgba(100, 180, 246, 0.1);
+            border-left: 4px solid #64b5f6;
+            padding: 12px 16px;
+            margin: 25px 0;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #ddd;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert {
+            padding: 14px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+
+        .alert.success { background: rgba(76, 175, 80, 0.2); color: #4caf50; border: 1px solid rgba(76, 175, 80, 0.5); }
+        .alert.error { background: rgba(244, 67, 54, 0.2); color: #ef5350; border: 1px solid rgba(244, 67, 54, 0.5); }
+        .alert.loading { background: rgba(0, 188, 212, 0.2); color: #00bcd4; border: 1px solid rgba(0, 188, 212, 0.5); }
+
+        .buttons { display: flex; gap: 12px; margin-top: 20px; }
+        button {
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-execute { flex: 1; background: #00bcd4; color: white; }
+        .btn-execute:hover:not(:disabled) {
+            background: #00acc1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 188, 212, 0.4);
+        }
+
+        .btn-clear {
+            background: rgba(80, 80, 100, 0.8);
+            color: #ddd;
+            min-width: 120px;
+        }
+
+        .btn-clear:hover {
+            background: rgba(100, 100, 120, 0.8);
+        }
+
+        .btn-back { background: rgba(80, 80, 100, 0.8); color: #ddd; }
+        .btn-back:hover { background: rgba(100, 100, 120, 0.8); }
+
+        .btn-connect { flex: 1; background: #00bcd4; color: white; }
+        .btn-connect:hover:not(:disabled) {
+            background: #00acc1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 188, 212, 0.4);
+        }
+
+        .btn-connect:disabled, .btn-execute:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        #result {
+            margin-top: 30px;
+            padding: 14px;
+            background: rgba(50, 50, 70, 0.8);
+            border-radius: 12px;
+            min-height: 150px;
+            color: #ddd;
+            font-family: monospace;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+
+        .sql-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 10px;
+            table-layout: auto; /* Tự động điều chỉnh độ rộng cột */
+        }
+
+        .sql-table th, .sql-table td {
+            padding: 8px;
+            border: 1px solid #444;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sql-table th {
+            background: #263238;
+            color: #4fc3f7;
+            position: sticky;
+            top: 0;
+        }
+
+        .sql-table td {
+            color: #e0e0e0;
+        }
+
+        .sql-table tr:nth-child(even) { background: rgba(255, 255, 255, 0.03); }
+        .sql-table tr:hover { background: rgba(100, 180, 246, 0.15); }
+
+        @media (max-width: 900px) {
+            .wrapper { width: 98%; }
+            .container, .execute-panel { width: 100%; max-width: none; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper" id="mainWrapper">
+        <!-- Form kết nối -->
+        <div class="container">
+            <h2>
+                <img src="images/icons8-microsoft-sql-server-60.png" alt="SQL Icon">
+                Kết nối SQL Server
+            </h2>
+            <p class="description">Nhập thông tin kết nối SQL Server để tiến hành kết nối lần đầu.</p>
+
+            <div id="alertMessage" class="alert"></div>
+
+            <form id="sqlConnectForm">
+                <div class="input-group">
+                    <img src="images/icons8-sql-64.png" alt="Server Icon">
+                    <input type="text" id="serverName" placeholder="Server Name (ví dụ: localhost\\SQLEXPRESS)" required>
+                </div>
+                <div class="input-group">
+                    <img src="images/icons8-sql-64.png" alt="Database Icon">
+                    <input type="text" id="databaseName" placeholder="Database Name (ví dụ: MyDatabase)" required>
+                </div>
+                <div class="input-group">
+                    <img src="images/icons8-id-verified-64.png" alt="User Icon">
+                    <input type="text" id="username" placeholder="Username (SQL)">
+                </div>
+                <div class="input-group">
+                    <img src="images/icons8-password-key-64.png" alt="Password Icon">
+                    <input type="password" id="password" placeholder="Password">
+                </div>
+
+                <div class="note">💡 Chỉ áp dụng cho khách hàng dùng SQL SERVER.</div>
+
+                <div class="buttons">
+                    <button type="button" class="btn-back" onclick="window.location.href='Home.html'">Quay lại</button>
+                    <button type="submit" class="btn-connect">Kết nối SQL</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Panel thực thi SQL -->
+        <div class="execute-panel" id="executePanel">
+            <button class="close-btn" onclick="window.location.href='Home.html'">×</button>
+            <h3>Thực thi lệnh SQL</h3>
+            <textarea id="sqlCommand" placeholder="Nhập lệnh SQL hoặc EXEC StoredProcedure ..."></textarea>
+            <div class="buttons">
+                <button type="button" class="btn-execute" id="executeBtn">Thực thi</button>
+                <button type="button" class="btn-clear" id="clearBtn">Clear lệnh</button>
+            </div>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function renderSqlResult(result) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+
+            if (!result || !result.recordsets || result.recordsets.length === 0) {
+                resultDiv.textContent = 'Không có dữ liệu trả về';
+                return;
+            }
+
+            const rows = result.recordsets[0];
+
+            if (!rows || rows.length === 0) {
+                resultDiv.textContent = 'Không có dòng dữ liệu';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.className = 'sql-table';
+
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            Object.keys(rows[0]).forEach(col => {
+                const th = document.createElement('th');
+                th.textContent = col;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            rows.forEach(row => {
+                const tr = document.createElement('tr');
+                Object.values(row).forEach(val => {
+                    const td = document.createElement('td');
+                    td.textContent = val === null ? 'NULL' : val;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            resultDiv.appendChild(table);
+        }
+
+        let connectionData = null;
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert ${type}`;
+            alertDiv.style.display = 'block';
+        }
+
+        document.getElementById('sqlConnectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const serverName = document.getElementById('serverName').value.trim();
+            const databaseName = document.getElementById('databaseName').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const connectBtn = document.querySelector('.btn-connect');
+
+            if (!serverName || !databaseName) {
+                showAlert('Vui lòng nhập Server Name và Database Name', 'error');
+                return;
+            }
+
+            try {
+                showAlert('Đang kiểm tra kết nối...', 'loading');
+                connectBtn.disabled = true;
+
+                const response = await fetch('/api/test-connection', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        serverName,
+                        databaseName,
+                        username: username || null,
+                        password: password || null,
+                        useWindowAuth: !username && !password
+                    })
+                });
+
+                if (!response.ok) {
+                    showAlert('Endpoint không tồn tại hoặc server lỗi.', 'error');
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    connectionData = { serverName, databaseName, username: username || null, password: password || null, useWindowAuth: !username && !password };
+                    document.getElementById('mainWrapper').classList.add('connected');
+                } else {
+                    showAlert(data.message || 'Lỗi kết nối. Vui lòng kiểm tra thông tin.', 'error');
+                }
+            } catch (error) {
+                showAlert('Endpoint không tồn tại hoặc không thể kết nối đến server.', 'error');
+            } finally {
+                connectBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('executeBtn').addEventListener('click', async () => {
+            const sql = document.getElementById('sqlCommand').value.trim();
+            const resultDiv = document.getElementById('result');
+            const btn = document.getElementById('executeBtn');
+
+            if (!sql || !connectionData) return;
+
+            resultDiv.textContent = 'Đang thực thi...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/execute-sql', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...connectionData, sql })
+                });
+
+                if (!response.ok) {
+                    resultDiv.textContent = 'Endpoint không tồn tại hoặc server lỗi.';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    renderSqlResult(data.result);
+                } else {
+                    resultDiv.textContent = data.message || 'Lỗi thực thi';
+                }
+            } catch (err) {
+                resultDiv.textContent = 'Endpoint không tồn tại hoặc lỗi kết nối.';
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            document.getElementById('sqlCommand').value = '';
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('sqlCommand').focus();
+        });
+    </script>
+</body>
+</html>
