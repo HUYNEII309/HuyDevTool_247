@@ -1,641 +1,1056 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Video Downloader</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Download - Beautiful Interface</title>
     <link rel="icon" href="images/apache_orc_logo_icon_167862.png" type="image/x-icon">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        :root{
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --card-glass: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+        }
+        
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
-
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
             background-image: url('images/234.png');
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
             background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 900px;
-            width: 100%;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
+            color: var(--text-primary);
             position: relative;
+            overflow: hidden;
         }
-
-        .header h1 {
-            color: #333;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .logo {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-
-        .header-close {
+        
+        body::before {
+            content: '';
             position: absolute;
             top: 0;
+            left: 0;
             right: 0;
-            background: none;
-            border: none;
-            color: #ff0000;
-            font-size: 32px;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 0;
-            line-height: 1;
-            transition: all 0.3s;
-            text-decoration: none;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            z-index: 0;
         }
-
-        .header-close:hover {
-            color: #cc0000;
-            transform: scale(1.3);
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .input-group input {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #ff0000;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: #ff0000;
-            font-size: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 5px 10px;
-            line-height: 1;
-            transition: all 0.3s;
-            display: none;
-            order: 2;
-        }
-
-        .close-btn:hover {
-            color: #cc0000;
-            transform: scale(1.3);
-        }
-
-        .close-btn.show {
-            display: block;
-        }
-
-        .btn {
+        
+        .card {
             width: 100%;
-            padding: 15px 20px;
-            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            line-height: 1.5;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+            max-width: 1200px;
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.15),
+                0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+            animation: cardEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+        
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-group {
+        
+        .header {
             display: flex;
-            gap: 10px;
-            align-items: stretch;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #f1f5f9;
         }
-
-        .btn-group .btn {
-            width: auto;
+        
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .header-text h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+        
+        .header-text p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .close-btn {
+            margin-left: auto;
+            width: 44px;
+            height: 44px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            color: var(--accent-red);
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            background: var(--accent-red);
+            color: white;
+            border-color: var(--accent-red);
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .input-wrapper {
             flex: 1;
+            position: relative;
+        }
+        
+        .input-wrapper input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        .input-wrapper input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .input-wrapper input:focus {
+            background: #ffffff;
+            border-color: #6366f1;
+            box-shadow: 
+                0 0 0 4px rgba(99, 102, 241, 0.1),
+                0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+        
+        .clear-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(239, 68, 68, 0.1);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            color: var(--accent-red);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
-        .btn-group .back-btn {
-            flex: 0.6;
+        
+        .clear-btn:hover {
+            background: var(--accent-red);
+            color: white;
+            transform: translateY(-50%) rotate(90deg);
         }
-
-        .back-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
-        }
-
-        .back-btn:hover {
-            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.5);
-            transform: translateY(-3px);
-        }
-
-        .result {
-            margin-top: 30px;
-            display: none;
-        }
-
-        .video-preview {
-            background: transparent;
-            border-radius: 15px;
-            padding: 0;
-            position: relative;
-            display: flex;
-            gap: 25px;
-            align-items: flex-start;
-        }
-
-        .video-container {
-            position: relative;
-            width: 100%;
-            flex-shrink: 0;
-            border-radius: 15px;
-            overflow: hidden;
-            background: #000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .video-wrapper {
-            width: 100%;
-            position: relative;
-        }
-
-        .video-wrapper iframe {
-            width: 100%;
-            height: 450px;
-            display: block;
+        
+        .btn {
+            padding: 16px 28px;
             border: none;
-        }
-
-        .info-container {
-            flex: 1;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 15px;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-
-        .video-info {
-            padding: 15px;
-            background: white;
-            border-radius: 12px;
-            text-align: left;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
+            color: white;
+            box-shadow: 
+                0 10px 25px rgba(99, 102, 241, 0.3),
+                0 4px 12px rgba(99, 102, 241, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
-
-        .video-info .title {
-            color: #333;
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 15px 35px rgba(99, 102, 241, 0.4),
+                0 8px 20px rgba(99, 102, 241, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0px);
+            box-shadow: 
+                0 8px 20px rgba(99, 102, 241, 0.3),
+                0 4px 12px rgba(99, 102, 241, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        .content {
+            display: grid;
+            gap: 24px;
+            transition: all 0.4s ease;
+        }
+        
+        .content.has-preview {
+            grid-template-columns: 1fr 400px;
+        }
+        
+        .preview-container {
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            height: 480px;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+            display: none;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        
+        .preview-container.show {
+            display: flex;
+            animation: previewFadeIn 0.5s ease forwards;
+        }
+        
+        @keyframes previewFadeIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .preview-container.active {
+            border-color: #6366f1;
+            box-shadow: 
+                0 0 40px rgba(99, 102, 241, 0.2),
+                0 10px 30px rgba(99, 102, 241, 0.15);
+        }
+        
+        .placeholder {
+            text-align: center;
+            color: #94a3b8;
             font-size: 16px;
-            font-weight: bold;
-            line-height: 1.6;
-            margin-bottom: 10px;
+            font-weight: 600;
+            padding: 40px;
         }
-
-        .video-info .channel {
-            color: #666;
+        
+        .placeholder::before {
+            content: '🎬';
+            display: block;
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.6;
+            animation: placeholderPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes placeholderPulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+        }
+        
+        .preview-container iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        
+        .preview-container.loaded iframe {
+            display: block;
+            opacity: 1;
+        }
+        
+        .preview-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 24px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            backdrop-filter: blur(8px);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .preview-container.loaded .preview-overlay {
+            transform: translateY(0);
+        }
+        
+        .preview-overlay h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+        }
+        
+        .preview-overlay p {
+            color: #cbd5e1;
             font-size: 14px;
-            margin-bottom: 5px;
         }
-
-        .video-info .stats {
-            color: #999;
-            font-size: 13px;
+        
+        .sidebar {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .sidebar.visible {
+            display: flex;
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+        
+        .info-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .info-card:hover {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-color: #cbd5e1;
+            transform: translateY(-4px);
+            box-shadow: 
+                0 12px 32px rgba(0, 0, 0, 0.08),
+                0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+        
+        .video-id-label {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .video-id-value {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            word-break: break-all;
+            animation: idPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        #fileInfo {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes idPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .btn-download {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+            color: white;
+            box-shadow: 
+                0 10px 25px rgba(16, 185, 129, 0.3),
+                0 4px 12px rgba(16, 185, 129, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-download:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .btn-download:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 15px 35px rgba(16, 185, 129, 0.4),
+                0 8px 20px rgba(16, 185, 129, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-download:not(:disabled):active {
+            transform: translateY(0px);
+            box-shadow: 
+                0 8px 20px rgba(16, 185, 129, 0.3),
+                0 4px 12px rgba(16, 185, 129, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
         .quality-selector {
-            padding: 15px;
-            background: white;
+            margin-top: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(99, 102, 241, 0.15);
         }
 
         .quality-selector label {
             display: block;
-            color: #333;
-            font-weight: bold;
+            font-size: 13px;
+            color: #475569;
             margin-bottom: 10px;
-            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .quality-selector select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
             border-radius: 10px;
-            font-size: 14px;
-            cursor: pointer;
             background: white;
-            transition: border-color 0.3s;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .quality-selector select:hover {
+            border-color: #cbd5e1;
+            background: #f8fafc;
         }
 
         .quality-selector select:focus {
             outline: none;
-            border-color: #ff0000;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            background: white;
         }
-
-        @media (max-width: 768px) {
-            .video-preview {
+        
+        @media (max-width: 1024px) {
+            .content.has-preview {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-container.show {
+                height: 360px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .card {
+                padding: 24px;
+            }
+            
+            .header {
+                flex-wrap: wrap;
+            }
+            
+            .close-btn {
+                margin-left: 0;
+                order: -1;
+            }
+            
+            .controls {
                 flex-direction: column;
             }
-
-            .video-container {
-                width: 100%;
+            
+            .preview-container.show {
+                height: 280px;
             }
-        }
-
-        .download-btn {
-            background: linear-gradient(135deg, #25d366 0%, #128c42 100%);
-            margin-top: 10px;
-            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
-            font-size: 17px;
-            padding: 12px 35px;
-            border-radius: 12px;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            position: relative;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .download-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .download-btn:hover::before {
-            left: 100%;
-        }
-
-        .download-btn:hover {
-            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.7);
-            transform: translateY(-5px) scale(1.03);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .download-btn:active {
-            transform: translateY(-1px) scale(0.98);
-        }
-
-        .loading {
-            text-align: center;
-            color: #ff0000;
-            font-weight: bold;
-            display: none;
-            margin-top: 20px;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #ff0000;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .error {
-            background: #fee;
-            color: #c33;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="card">
         <div class="header">
-            <a href="Home.html" class="header-close">X</a>
             <div class="logo">📺</div>
-            <h1>YouTube Downloader</h1>
-            <p>Tải video YouTube chất lượng cao</p>
+            <div class="header-text">
+                <h1>YouTube Video Download</h1>
+                <p>Tải video từ Youtube thành file mp3, mp4, video về máy</p>
+            </div>
+            <a href="Home.html" class="close-btn" title="Đóng">✕</a>
         </div>
 
-        <div class="input-group">
-            <input type="text" id="urlInput" placeholder="Dán link YouTube vào đây..." />
-            <button class="close-btn" id="closeBtn">X</button>
+        <div class="controls">
+            <div class="input-wrapper">
+                <input 
+                    id="urlInput" 
+                    type="text"
+                    placeholder="Dán link YouTube vào đây (ví dụ: https://youtu.be/abc123)"
+                    autocomplete="off"
+                />
+                <button class="clear-btn" id="clearBtn" title="Xóa">✕</button>
+            </div>
+            <button class="btn btn-primary" id="previewBtn">
+                <span>🔎</span>
+                <span class="label">Xem trước</span>
+            </button>
         </div>
 
-        <div class="btn-group">
-            <button class="btn" id="downloadBtn">Tải Video</button>
-            <a href="Home.html" class="btn back-btn">🏠 Quay lại Home</a>
-        </div>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Đang xử lý...</p>
-        </div>
-
-        <div class="error" id="error"></div>
-
-        <div class="result" id="result">
-            <div class="video-preview">
-                <div style="width: 100%;">
-                    <div class="video-container">
-                        <div class="video-wrapper">
-                            <iframe id="videoPreview" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                        </div>
-                    </div>
-                    
-                    <div class="info-container">
-                        <div class="video-info">
-                            <div class="title" id="videoTitle"></div>
-                            <div class="channel" id="videoChannel"></div>
-                            <div class="stats" id="videoStats"></div>
-                        </div>
-                        
-                        <div class="quality-selector">
-                            <label for="qualitySelect">Chọn chất lượng:</label>
-                            <select id="qualitySelect">
-                                <option value="">Đang tải...</option>
-                            </select>
-                        </div>
-
-                        <button class="btn download-btn" id="finalDownload">⬇️ Tải xuống</button>
-                    </div>
+        <div class="content">
+            <div class="preview-container" id="previewArea">
+                <div class="placeholder">
+                    Dán link YouTube và nhấn "Xem trước" để bắt đầu
+                </div>
+                <iframe 
+                    id="videoPreview" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen
+                ></iframe>
+                <div class="preview-overlay">
+                    <h3 id="overlayTitle">—</h3>
+                    <p id="overlayInfo">—</p>
                 </div>
             </div>
+
+            <aside class="sidebar" id="sidebar">
+                <div class="info-card">
+                    <div class="video-id-label">Video ID</div>
+                    <div class="video-id-value" id="videoId">—</div>
+                    <div id="fileInfo"></div>
+                </div>
+                <button class="btn btn-download" id="downloadBtn">
+                    <span>⬇️</span>
+                    <span class="label">Tải xuống</span>
+                </button>
+            </aside>
         </div>
     </div>
 
     <script>
         const urlInput = document.getElementById('urlInput');
+        const previewBtn = document.getElementById('previewBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const previewArea = document.getElementById('previewArea');
+        const iframe = document.getElementById('videoPreview');
+        const overlayTitle = document.getElementById('overlayTitle');
+        const overlayInfo = document.getElementById('overlayInfo');
+        const videoIdEl = document.getElementById('videoId');
         const downloadBtn = document.getElementById('downloadBtn');
-        const closeBtn = document.getElementById('closeBtn');
-        const loading = document.getElementById('loading');
-        const error = document.getElementById('error');
-        const result = document.getElementById('result');
-        const videoPreview = document.getElementById('videoPreview');
-        const videoTitle = document.getElementById('videoTitle');
-        const videoChannel = document.getElementById('videoChannel');
-        const videoStats = document.getElementById('videoStats');
-        const qualitySelect = document.getElementById('qualitySelect');
-        const finalDownload = document.getElementById('finalDownload');
+        const sidebar = document.getElementById('sidebar');
+        const content = document.querySelector('.content');
+        
+        let downloadData = null;
+        let isPreparingDownload = false;
+        let selectedQuality = null;
 
-        let videoData = null;
-        let currentVideoId = '';
-
-        // Hiển thị/ẩn nút close khi input thay đổi
-        urlInput.addEventListener('input', () => {
-            if (urlInput.value.trim()) {
-                closeBtn.classList.add('show');
-            } else {
-                closeBtn.classList.remove('show');
-            }
-        });
-
-        // Xóa nội dung input khi click nút close
-        closeBtn.addEventListener('click', () => {
-            urlInput.value = '';
-            closeBtn.classList.remove('show');
-            hideResult();
-            hideError();
-            urlInput.focus();
-        });
-
-        // Lấy Video ID từ URL YouTube
         function getVideoId(url) {
+            if (!url) return null;
             const patterns = [
                 /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
                 /youtube\.com\/embed\/([^&\n?#]+)/,
                 /youtube\.com\/v\/([^&\n?#]+)/
             ];
-            
-            for (let pattern of patterns) {
+            for (const pattern of patterns) {
                 const match = url.match(pattern);
                 if (match) return match[1];
             }
             return null;
         }
 
-        downloadBtn.addEventListener('click', async () => {
-            const url = urlInput.value.trim();
-            
-            if (!url) {
-                showError('Vui lòng nhập link YouTube!');
-                return;
+        function formatFileSize(bytes) {
+            if (!bytes) return 'N/A';
+            const mb = bytes / (1024 * 1024);
+            if (mb >= 1000) {
+                return (mb / 1024).toFixed(2) + ' GB';
             }
+            return mb.toFixed(2) + ' MB';
+        }
 
-            const videoId = getVideoId(url);
+        function formatDuration(seconds) {
+            if (!seconds) return 'N/A';
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
             
-            if (!videoId) {
-                showError('Link không hợp lệ! Vui lòng nhập link YouTube.');
-                return;
+            if (hrs > 0) {
+                return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             }
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
 
-            hideError();
-            hideResult();
-            showLoading();
+        async function prepareDownload(id) {
+            isPreparingDownload = true;
+            downloadData = null;
+            
+            const btnLabel = downloadBtn.querySelector('.label');
+            const originalText = btnLabel.textContent;
+            btnLabel.textContent = 'Đang tải thông tin...';
             downloadBtn.disabled = true;
-
+            
             try {
-                // Sử dụng RapidAPI để lấy thông tin video YouTube
-                const apiUrl = `https://youtube-media-downloader.p.rapidapi.com/v2/video/details?videoId=${videoId}`;
-                
-                const response = await fetch(apiUrl, {
-                    method: 'GET',
-                    headers: {
-                        'x-rapidapi-host': 'youtube-media-downloader.p.rapidapi.com',
-                        'x-rapidapi-key': '73633ff8ebmsh1fdac1697990ffbp1c6989jsnda9fe7b1cee4'
+                const response = await fetch(
+                    `https://youtube-media-downloader.p.rapidapi.com/v2/video/details?videoId=${id}&urlAccess=normal&videos=auto&audios=auto`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'x-rapidapi-host': 'youtube-media-downloader.p.rapidapi.com',
+                            'x-rapidapi-key': '73633ff8ebmsh1fdac1697990ffbp1c6989jsnda9fe7b1cee4'
+                        }
                     }
-                });
-
+                );
+                
                 if (!response.ok) {
-                    throw new Error(`Lỗi API: ${response.status}`);
+                    throw new Error('Không thể tải thông tin video');
                 }
-
-                const data = await response.json();
-
-                if (data && data.title) {
-                    videoData = data;
-                    currentVideoId = videoId;
-                    
-                    // Hiển thị video preview
-                    videoPreview.src = `https://www.youtube.com/embed/${videoId}`;
+                
+                downloadData = await response.json();
+                console.log('Video data:', downloadData);
+                console.log('Videos items:', downloadData.videos?.items);
+                console.log('Videos items length:', downloadData.videos?.items?.length);
+                console.log('Audios items:', downloadData.audios?.items);
+                isPreparingDownload = false;
+                
+                const fileInfoEl = document.getElementById('fileInfo');
+                if (fileInfoEl && downloadData) {
+                    let infoHTML = '';
                     
                     // Hiển thị thông tin video
-                    videoTitle.textContent = data.title || 'YouTube Video';
-                    videoChannel.textContent = data.channel?.name || 'Unknown Channel';
+                    if (downloadData.title) {
+                        overlayTitle.textContent = downloadData.title;
+                    }
                     
-                    // Hiển thị thống kê
-                    const views = data.stats?.views ? `${formatNumber(data.stats.views)} lượt xem` : '';
-                    const likes = data.stats?.likes ? `${formatNumber(data.stats.likes)} likes` : '';
-                    videoStats.textContent = [views, likes].filter(Boolean).join(' • ');
+                    if (downloadData.duration) {
+                        overlayInfo.textContent = `Thời lượng: ${formatDuration(downloadData.duration)}`;
+                    }
                     
-                    // Hiển thị các tùy chọn chất lượng
-                    populateQualityOptions(data);
+                    console.log('Rendering quality selector...');
+                    console.log('Has video items:', downloadData.videos?.items?.length > 0);
+                    console.log('Has audio items:', downloadData.audios?.items?.length > 0);
                     
-                    hideLoading();
-                    showResult();
-                } else {
-                    throw new Error('Không thể tải video. Vui lòng thử lại!');
+                    // Tạo dropdown chọn chất lượng từ videos.items
+                    if (downloadData.videos?.items && downloadData.videos.items.length > 0) {
+                        const videoItems = downloadData.videos.items;
+                        console.log('Creating quality selector with', videoItems.length, 'video items');
+                        
+                        // Lọc và sắp xếp theo quality (cao xuống thấp)
+                        const qualityOrder = ['2160p', '1440p', '1080p', '720p', '480p', '360p', '240p', '144p'];
+                        
+                        // Lọc những video có audio hoặc chất lượng cao
+                        const filteredVideos = videoItems.filter(item => {
+                            // Ưu tiên video có audio hoặc chất lượng từ 360p trở lên
+                            return item.hasAudio === true || 
+                                   (item.quality && ['2160p', '1440p', '1080p', '720p', '480p', '360p'].some(q => item.quality.includes(q)));
+                        });
+                        
+                        const sortedItems = [...filteredVideos].sort((a, b) => {
+                            const aIndex = qualityOrder.findIndex(q => a.quality?.includes(q));
+                            const bIndex = qualityOrder.findIndex(q => b.quality?.includes(q));
+                            if (aIndex === -1 && bIndex === -1) return 0;
+                            if (aIndex === -1) return 1;
+                            if (bIndex === -1) return -1;
+                            return aIndex - bIndex;
+                        });
+                        
+                        console.log('Sorted items:', sortedItems.length);
+                        
+                        if (sortedItems.length > 0) {
+                            infoHTML += '<div class="quality-selector">';
+                            infoHTML += '<label>📹 Chọn chất lượng video:</label>';
+                            infoHTML += '<select id="qualitySelect">';
+                            
+                            sortedItems.forEach((item, index) => {
+                                const quality = item.quality || 'Unknown';
+                                const size = item.sizeText || 'N/A';
+                                const extension = item.extension || 'mp4';
+                                const originalIndex = videoItems.indexOf(item);
+                                const audioTag = item.hasAudio ? ' 🔊' : '';
+                                
+                                // Highlight quality phổ biến
+                                let badge = '';
+                                if (quality.includes('1080p')) badge = ' 🔥 HD';
+                                else if (quality.includes('720p')) badge = ' ⭐ HD';
+                                else if (quality.includes('2160p') || quality.includes('4K')) badge = ' 💎 4K';
+                                
+                                infoHTML += `<option value="${originalIndex}">${quality}${badge}${audioTag} • ${size} • ${extension.toUpperCase()}</option>`;
+                            });
+                            
+                            infoHTML += '</select>';
+                            infoHTML += '</div>';
+                            
+                            // Mặc định chọn video chất lượng cao nhất
+                            selectedQuality = videoItems.indexOf(sortedItems[0]);
+                            
+                            // Hiển thị thông tin video được chọn
+                            const selectedItem = sortedItems[0];
+                            infoHTML += `
+                                <div style="margin-top: 12px; padding: 12px; background: rgba(16, 185, 129, 0.05); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.1);">
+                                    <div style="font-size: 12px; color: #64748b; margin-bottom: 4px;">✅ Đã chọn:</div>
+                                    <div id="selectedQualityInfo" style="font-size: 14px; font-weight: 600; color: #10b981;">${selectedItem.quality} • ${selectedItem.sizeText}</div>
+                                </div>
+                            `;
+                        } else {
+                            infoHTML += `
+                                <div style="margin-top: 12px; padding: 12px; background: rgba(239, 68, 68, 0.05); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.1);">
+                                    <div style="font-size: 13px; color: #ef4444; font-weight: 600;">⚠️ Không tìm thấy video phù hợp</div>
+                                </div>
+                            `;
+                        }
+                    } else if (downloadData.audios?.items && downloadData.audios.items.length > 0) {
+                        console.log('Creating audio quality selector with', downloadData.audios.items.length, 'audio items');
+                        
+                        const audioItems = downloadData.audios.items;
+                        infoHTML += '<div class="quality-selector">';
+                        infoHTML += '<label>🎵 Chọn chất lượng audio:</label>';
+                        infoHTML += '<select id="qualitySelect">';
+                        
+                        audioItems.forEach((audio, index) => {
+                            const quality = audio.mimeType || 'Unknown';
+                            const size = audio.sizeText || 'N/A';
+                            const extension = audio.extension || 'm4a';
+                            infoHTML += `<option value="${index}">${extension.toUpperCase()} • ${size}</option>`;
+                        });
+                        
+                        infoHTML += '</select>';
+                        infoHTML += '</div>';
+                        
+                        selectedQuality = 0;
+                    } else {
+                        console.warn('No video or audio items available');
+                        infoHTML += `
+                            <div style="margin-top: 12px; padding: 12px; background: rgba(239, 68, 68, 0.05); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.1);">
+                                <div style="font-size: 13px; color: #ef4444; font-weight: 600;">⚠️ Không tìm thấy link tải xuống</div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Hiển thị thông tin thêm
+                    if (downloadData.channelTitle) {
+                        infoHTML += `
+                            <div style="margin-top: 12px; padding: 12px; background: rgba(251, 146, 60, 0.05); border-radius: 8px; border: 1px solid rgba(251, 146, 60, 0.1);">
+                                <div style="font-size: 13px; color: #64748b; margin-bottom: 4px;">Kênh:</div>
+                                <div style="font-size: 14px; font-weight: 600; color: #1e293b;">${downloadData.channelTitle}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    fileInfoEl.innerHTML = infoHTML;
+                    console.log('HTML rendered, innerHTML length:', infoHTML.length);
+                    
+                    // Thêm event listener cho dropdown với setTimeout để đảm bảo DOM đã render
+                    setTimeout(() => {
+                        const qualitySelect = document.getElementById('qualitySelect');
+                        console.log('Quality select element:', qualitySelect);
+                        
+                        if (qualitySelect) {
+                            qualitySelect.addEventListener('change', (e) => {
+                                selectedQuality = parseInt(e.target.value);
+                                console.log('Selected quality index:', selectedQuality);
+                                
+                                // Cập nhật thông tin video được chọn
+                                const selectedQualityInfo = document.getElementById('selectedQualityInfo');
+                                if (selectedQualityInfo && downloadData.videos?.items) {
+                                    const item = downloadData.videos.items[selectedQuality];
+                                    if (item) {
+                                        selectedQualityInfo.textContent = `${item.quality} • ${item.sizeText}`;
+                                    }
+                                }
+                            });
+                            console.log('Event listener attached to quality select');
+                        } else {
+                            console.error('Quality select element not found!');
+                        }
+                    }, 100);
                 }
-            } catch (err) {
-                hideLoading();
-                showError('Lỗi: ' + err.message + '. Vui lòng kiểm tra link và thử lại!');
-            } finally {
+                
                 downloadBtn.disabled = false;
-            }
-        });
-
-        function populateQualityOptions(data) {
-            qualitySelect.innerHTML = '';
-            
-            if (data.videos && data.videos.length > 0) {
-                // Thêm các tùy chọn video
-                data.videos.forEach(video => {
-                    const option = document.createElement('option');
-                    option.value = video.url;
-                    option.textContent = `${video.quality} - ${video.extension.toUpperCase()} (${video.size || 'N/A'})`;
-                    qualitySelect.appendChild(option);
-                });
-            } else {
-                const option = document.createElement('option');
-                option.value = '';
-                option.textContent = 'Không có tùy chọn tải xuống';
-                qualitySelect.appendChild(option);
+                btnLabel.textContent = 'Tải xuống';
+                
+            } catch (error) {
+                console.error('Lỗi tải thông tin:', error);
+                isPreparingDownload = false;
+                downloadBtn.disabled = false;
+                btnLabel.textContent = originalText;
+                alert('Lỗi khi tải thông tin video. Vui lòng thử lại.');
             }
         }
-
-        function formatNumber(num) {
-            if (num >= 1000000000) {
-                return (num / 1000000000).toFixed(1) + 'B';
-            }
-            if (num >= 1000000) {
-                return (num / 1000000).toFixed(1) + 'M';
-            }
-            if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'K';
-            }
-            return num.toString();
+        
+        function showPreview(id) {
+            content.classList.add('has-preview');
+            previewArea.classList.add('show');
+            sidebar.classList.add('visible');
+            
+            iframe.src = `https://www.youtube.com/embed/${id}`;
+            
+            previewArea.classList.remove('loaded');
+            
+            iframe.onload = () => {
+                previewArea.classList.add('loaded', 'active');
+                
+                const placeholder = previewArea.querySelector('.placeholder');
+                if (placeholder) placeholder.remove();
+            };
+            
+            videoIdEl.textContent = id;
+            videoIdEl.style.animation = 'none';
+            setTimeout(() => {
+                videoIdEl.style.animation = '';
+            }, 10);
+            
+            downloadBtn.disabled = true;
+            prepareDownload(id);
         }
 
-        finalDownload.addEventListener('click', async () => {
-            const selectedUrl = qualitySelect.value;
+        previewBtn.addEventListener('click', () => {
+            const url = urlInput.value.trim();
+            const id = getVideoId(url);
             
-            if (!selectedUrl) {
-                showError('Vui lòng chọn chất lượng video!');
+            if (!id) {
+                urlInput.style.borderColor = 'var(--accent-red)';
+                setTimeout(() => {
+                    urlInput.style.borderColor = '';
+                }, 2000);
                 return;
             }
+            
+            showPreview(id);
+        });
 
-            try {
-                finalDownload.disabled = true;
-                finalDownload.textContent = '⏳ Đang tải...';
-                
-                // Mở link download trong tab mới
-                window.open(selectedUrl, '_blank');
-                
-                finalDownload.textContent = '✅ Đã mở link tải!';
-                setTimeout(() => {
-                    finalDownload.textContent = '⬇️ Tải xuống';
-                    finalDownload.disabled = false;
-                }, 2000);
-                
-            } catch (err) {
-                console.error('Download error:', err);
-                finalDownload.textContent = '⬇️ Tải xuống';
-                finalDownload.disabled = false;
-                showError('Không thể tải video. Vui lòng thử lại!');
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') previewBtn.click();
+        });
+
+        clearBtn.addEventListener('click', () => {
+            urlInput.value = '';
+            urlInput.focus();
+            
+            iframe.src = '';
+            content.classList.remove('has-preview');
+            previewArea.classList.remove('loaded', 'active', 'show');
+            sidebar.classList.remove('visible');
+            
+            overlayTitle.textContent = '—';
+            overlayInfo.textContent = '—';
+            videoIdEl.textContent = '—';
+            
+            const fileInfoEl = document.getElementById('fileInfo');
+            if (fileInfoEl) fileInfoEl.innerHTML = '';
+            
+            downloadData = null;
+            isPreparingDownload = false;
+            selectedQuality = null;
+            downloadBtn.disabled = false;
+            const btnLabel = downloadBtn.querySelector('.label');
+            if (btnLabel) btnLabel.textContent = 'Tải xuống';
+            
+            let placeholder = previewArea.querySelector('.placeholder');
+            if (!placeholder) {
+                placeholder = document.createElement('div');
+                placeholder.className = 'placeholder';
+                placeholder.textContent = 'Dán link YouTube và nhấn "Xem trước" để bắt đầu';
+                previewArea.insertBefore(placeholder, iframe);
             }
         });
 
-        function showLoading() {
-            loading.style.display = 'block';
-        }
-
-        function hideLoading() {
-            loading.style.display = 'none';
-        }
-
-        function showError(message) {
-            error.textContent = message;
-            error.style.display = 'block';
-        }
-
-        function hideError() {
-            error.style.display = 'none';
-        }
-
-        function showResult() {
-            result.style.display = 'block';
-        }
-
-        function hideResult() {
-            result.style.display = 'none';
-        }
-
-        // Cho phép nhấn Enter để tải
-        urlInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                downloadBtn.click();
+        downloadBtn.addEventListener('click', async () => {
+            const id = videoIdEl.textContent;
+            if (id === '—') {
+                alert('Vui lòng xem trước video trước khi tải xuống.');
+                return;
+            }
+            
+            if (isPreparingDownload) {
+                alert('Đang tải thông tin, vui lòng đợi...');
+                return;
+            }
+            
+            // Kiểm tra có videos.items hoặc audios.items
+            const hasVideos = downloadData?.videos?.items && downloadData.videos.items.length > 0;
+            const hasAudios = downloadData?.audios?.items && downloadData.audios.items.length > 0;
+            
+            if (!hasVideos && !hasAudios) {
+                alert('Không tìm thấy link tải xuống. Vui lòng thử lại.');
+                return;
+            }
+            
+            try {
+                const btnLabel = downloadBtn.querySelector('.label');
+                const originalText = btnLabel.textContent;
+                
+                // Lấy item được chọn
+                let selectedItem = null;
+                let fileName = downloadData.title || id;
+                
+                if (hasVideos) {
+                    const itemIndex = selectedQuality !== null ? selectedQuality : 0;
+                    selectedItem = downloadData.videos.items[itemIndex];
+                    fileName += `_${selectedItem.quality}.${selectedItem.extension || 'mp4'}`;
+                } else if (hasAudios) {
+                    const itemIndex = selectedQuality !== null ? selectedQuality : 0;
+                    selectedItem = downloadData.audios.items[itemIndex];
+                    fileName += `.${selectedItem.extension || 'm4a'}`;
+                }
+                
+                if (!selectedItem || !selectedItem.url) {
+                    alert('Link tải xuống không hợp lệ. Vui lòng thử chọn chất lượng khác.');
+                    return;
+                }
+                
+                console.log('Downloading:', selectedItem);
+                console.log('Download URL:', selectedItem.url);
+                console.log('Quality:', selectedItem.quality);
+                console.log('Size:', selectedItem.sizeText);
+                
+                btnLabel.textContent = 'Đang tải... 0%';
+                downloadBtn.disabled = true;
+                
+                // Sử dụng XMLHttpRequest để tải file với progress
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', selectedItem.url, true);
+                xhr.responseType = 'blob';
+                
+                // Theo dõi tiến trình tải
+                xhr.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const percentComplete = Math.round((event.loaded / event.total) * 100);
+                        btnLabel.textContent = `Đang tải... ${percentComplete}%`;
+                    }
+                };
+                
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        // Tạo blob URL từ response
+                        const blob = xhr.response;
+                        const blobUrl = URL.createObjectURL(blob);
+                        
+                        // Tạo link download
+                        const a = document.createElement('a');
+                        a.href = blobUrl;
+                        a.download = fileName;
+                        a.style.display = 'none';
+                        
+                        document.body.appendChild(a);
+                        a.click();
+                        
+                        // Cleanup
+                        setTimeout(() => {
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(blobUrl);
+                        }, 100);
+                        
+                        btnLabel.textContent = '✅ Đã tải!';
+                        
+                        setTimeout(() => {
+                            btnLabel.textContent = originalText;
+                            downloadBtn.disabled = false;
+                        }, 2000);
+                    } else {
+                        throw new Error(`HTTP ${xhr.status}`);
+                    }
+                };
+                
+                xhr.onerror = () => {
+                    console.error('XHR error');
+                    
+                    // Fallback: Mở trong tab mới với download attribute
+                    btnLabel.textContent = 'Đang mở...';
+                    
+                    const a = document.createElement('a');
+                    a.href = selectedItem.url + '&title=' + encodeURIComponent(fileName);
+                    a.download = fileName;
+                    a.target = '_blank';
+                    
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    setTimeout(() => {
+                        btnLabel.textContent = originalText;
+                        downloadBtn.disabled = false;
+                        alert('Nếu video mở trong tab mới, hãy nhấp chuột phải vào video và chọn "Save video as..." để tải về.');
+                    }, 1000);
+                };
+                
+                // Bắt đầu tải
+                xhr.send();
+                
+            } catch (error) {
+                console.error('Lỗi tải xuống:', error);
+                const btnLabel = downloadBtn.querySelector('.label');
+                btnLabel.textContent = 'Tải xuống';
+                downloadBtn.disabled = false;
+                alert('Có lỗi xảy ra khi tải xuống. Vui lòng thử lại.');
             }
         });
     </script>
